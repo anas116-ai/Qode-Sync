@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 70 20% 97%;
+    --foreground: 70 15% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 70 15% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 70 15% 8%;
+    --primary: 70 55% 50%;
+    --primary-foreground: 70 20% 8%;
+    --secondary: 70 14% 94%;
+    --secondary-foreground: 70 15% 8%;
+    --muted: 70 10% 92%;
+    --muted-foreground: 70 8% 50%;
+    --accent: 70 55% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 70 10% 88%;
+    --input: 70 10% 88%;
+    --ring: 70 55% 50%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 230 25% 7%;
+    --foreground: 70 10% 92%;
+    --card: 230 20% 10%;
+    --card-foreground: 70 10% 92%;
+    --popover: 230 20% 10%;
+    --popover-foreground: 70 10% 92%;
+    --primary: 70 55% 50%;
+    --primary-foreground: 230 25% 7%;
+    --secondary: 230 15% 14%;
+    --secondary-foreground: 70 10% 92%;
+    --muted: 230 15% 13%;
+    --muted-foreground: 70 8% 55%;
+    --accent: 70 55% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 55% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 230 15% 17%;
+    --input: 230 15% 17%;
+    --ring: 70 55% 50%;
+  }
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0d18;
+  color: #e2e8f0;
+  font-family: Cabinet Grotesk, Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(200, 217, 48, 0.35);
+  color: #f0f5b8;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 217, 48, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 217, 48, 0.5);
+}
+
+/* ═══ Glass Effects ═══ */
+.glass {
+  background: rgba(10, 13, 24, 0.6);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(200, 217, 48, 0.1);
+}
+
+.glass-card {
+  background: rgba(10, 13, 24, 0.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(200, 217, 48, 0.12);
+}
+
+/* ═══ Text Gradients ═══ */
+.text-gradient-brand {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, #e8f553, #c8d930, #a8b820);
+}
+
+.text-gradient-warm {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, #e8f553, #f0f5b8, #c8d930);
+}
+
+.text-gradient-electric {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(135deg, #e8f553, #c8d930, #a8b820);
+}
+
+/* ═══ Glow Effects (lemon yellow) ═══ */
+.glow-brand {
+  box-shadow: 0 0 20px rgba(200, 217, 48, 0.2), 0 0 40px rgba(200, 217, 48, 0.1), 0 0 80px rgba(200, 217, 48, 0.05);
+}
+
+.glow-brand-lg {
+  box-shadow: 0 0 30px rgba(200, 217, 48, 0.3), 0 0 60px rgba(200, 217, 48, 0.15), 0 0 100px rgba(200, 217, 48, 0.08);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(200, 217, 48, 0.2), 0 0 40px rgba(200, 217, 48, 0.1), 0 0 80px rgba(200, 217, 48, 0.05);
+}
+
+/* ═══ Noise Texture ═══ */
+.noise {
+  position: relative;
+}
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ═══ Text Glow ═══ */
+.text-glow {
+  text-shadow: 0 0 20px rgba(200, 217, 48, 0.4), 0 0 40px rgba(200, 217, 48, 0.2);
+}
+
+/* ═══ Grid Background ═══ */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(200, 217, 48, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 217, 48, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-grid-white {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ═══ Neon Border Pulse ═══ */
+@keyframes neon-border-pulse {
+  0%, 100% {
+    border-color: rgba(200, 217, 48, 0.15);
+    box-shadow: 0 0 15px rgba(200, 217, 48, 0.05);
+  }
+  50% {
+    border-color: rgba(200, 217, 48, 0.35);
+    box-shadow: 0 0 25px rgba(200, 217, 48, 0.1);
+  }
+}
+
+.animate-neon-pulse {
+  animation: neon-border-pulse 3s ease-in-out infinite;
+}
+
+/* ═══ Glow Button Hover ═══ */
+.btn-glow {
+  transition: all 0.3s ease;
+}
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(200, 217, 48, 0.4), 0 0 40px rgba(200, 217, 48, 0.2), 0 0 60px rgba(200, 217, 48, 0.1);
+}
+
+/* ═══ Card Hover Glow ═══ */
+.card-glow-hover {
+  transition: all 0.4s ease;
+}
+.card-glow-hover:hover {
+  box-shadow: 0 0 30px rgba(200, 217, 48, 0.08), 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: rgba(200, 217, 48, 0.25);
+}
+
+/* ═══ Brand background (dark mode space) ═══ */
+.bg-brand-space {
+  background: radial-gradient(ellipse at 20% 50%, #0f1220 0%, #0a0d18 50%, #070912 100%);
+}
+
+/* ═══ Neon Button Effect ═══ */
+.neon-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.neon-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(200, 217, 48, 0.1) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.neon-btn:hover {
+  box-shadow: 0 0 15px rgba(200, 217, 48, 0.3), 0 0 30px rgba(200, 217, 48, 0.15);
+  transform: translateY(-1px);
+}
+.neon-btn:hover::after {
+  opacity: 1;
+}
+.neon-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ═══ Colorful Repository Tags ═══ */
+.repo-tag-1 { background: linear-gradient(135deg, #e8f55333, #c8d93022); border-color: rgba(200, 217, 48, 0.3); }
+.repo-tag-2 { background: linear-gradient(135deg, #f9731633, #ea580c22); border-color: rgba(249, 115, 22, 0.3); }
+.repo-tag-3 { background: linear-gradient(135deg, #3b82f633, #2563eb22); border-color: rgba(59, 130, 246, 0.3); }
+.repo-tag-4 { background: linear-gradient(135deg, #a855f733, #7c3aed22); border-color: rgba(168, 85, 247, 0.3); }
+.repo-tag-5 { background: linear-gradient(135deg, #06b6d433, #0891b222); border-color: rgba(6, 182, 212, 0.3); }
+.repo-tag-6 { background: linear-gradient(135deg, #84cc1633, #65a30d22); border-color: rgba(132, 204, 22, 0.3); }
+
+/* ═══ Sync Pulse Animation ═══ */
+@keyframes sync-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(200, 217, 48, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(200, 217, 48, 0.4); }
+}
+.sync-pulse {
+  animation: sync-pulse 2s ease-in-out infinite;
+}
+
+/* ═══ Glitter Sparkle Effect ═══ */
+@keyframes sparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 0.6; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+.sparkle {
+  position: relative;
+}
+.sparkle::before,
+.sparkle::after {
+  content: '✦';
+  position: absolute;
+  font-size: 8px;
+  color: #e8f553;
+  opacity: 0;
+  pointer-events: none;
+}
+.sparkle:hover::before {
+  animation: sparkle 1s ease-in-out infinite;
+  top: -5px;
+  right: -5px;
+}
+.sparkle:hover::after {
+  animation: sparkle 1.2s ease-in-out 0.3s infinite;
+  bottom: -5px;
+  left: -5px;
+}
+
+/* ═══ Card entry animation ═══ */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-enter {
+  animation: card-enter 0.4s ease-out forwards;
+}
+.card-enter:nth-child(1) { animation-delay: 0s; }
+.card-enter:nth-child(2) { animation-delay: 0.05s; }
+.card-enter:nth-child(3) { animation-delay: 0.1s; }
+.card-enter:nth-child(4) { animation-delay: 0.15s; }
+.card-enter:nth-child(5) { animation-delay: 0.2s; }
+.card-enter:nth-child(6) { animation-delay: 0.25s; }
+.card-enter:nth-child(7) { animation-delay: 0.3s; }
+.card-enter:nth-child(8) { animation-delay: 0.35s; }
+.card-enter:nth-child(9) { animation-delay: 0.4s; }
+.card-enter:nth-child(10) { animation-delay: 0.45s; }
+.card-enter:nth-child(11) { animation-delay: 0.5s; }
+.card-enter:nth-child(12) { animation-delay: 0.55s; }

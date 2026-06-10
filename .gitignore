@@ -1,8 +1,115 @@
+# Dependencies
 node_modules/
+.venv/
+venv/
+env/
+
+# Build output
 dist/
+build/
+*.tsbuildinfo
+
+# Environment files
 .env
+.env.local
+.env.production
+.env.development
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Python
 *.pyc
 __pycache__/
-.venv/
+*.pyo
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Images / assets (not needed in repo)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+
+# Misc
+frontend.*.log
+preview.log
+
+# Database / storage
+*.sqlite
+*.sqlite3
+*.db
+
+# Test & coverage output
+*.coverage
+.coverage
+htmlcov/
+.coverage.*
+coverage/
+.pytest_cache/
+
+# System files
+*.swp
+*.swo
+*~
+*.bak
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Secret / sensitive (never commit)
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+*.secret
+credentials.json
+service-account*.json
+*credential*.json
+*prod*.env
+*prod*.json
+
+# Docker
+.docker/
+*.tar
+*.tar.gz
+
+# Local runtime / data
+*.pid
+*.seed
+*.pid.lock
+
+# IDE extended
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/tailwind.css-data.json
+
+# Temp / cache
+tmp/
+temp/
+.cache/
+*.tmp
+
+# Terraform (if any)
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+crash.*.log

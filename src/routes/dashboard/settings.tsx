@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Settings, Bell, User, Shield } from "lucide-react";
+import { Bell, User, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/providers/auth-provider";
 
@@ -38,7 +38,7 @@ function SettingsPage() {
   );
 }
 
-function ProfileSettings({ profile }: { profile: any }) {
+function ProfileSettings({ profile }: { profile: { username?: string; email?: string | null } }) {
   return (
     <div className="rounded-lg border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold">Profile Settings</h2>

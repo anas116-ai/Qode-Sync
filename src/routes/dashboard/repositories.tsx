@@ -129,9 +129,9 @@ async function checkForUpstreamUpdates(token: string, repo: RepoItem): Promise<U
     
     let behindBy = 0;
     let hasUpdate = false;
-    let latestCommit = upstreamData[0]?.sha || "";
-    let latestCommitDate = upstreamData[0]?.commit?.author?.date || "";
-    let latestCommitMessage = upstreamData[0]?.commit?.message || "";
+    const latestCommit = upstreamData[0]?.sha || "";
+    const latestCommitDate = upstreamData[0]?.commit?.author?.date || "";
+    const latestCommitMessage = upstreamData[0]?.commit?.message || "";
 
     if (compareRes.ok) {
       const compareData = await compareRes.json();

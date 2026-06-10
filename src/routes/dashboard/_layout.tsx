@@ -1,7 +1,6 @@
 import { Outlet, Navigate, createFileRoute, useRouterState, useRouter } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { hasSupabaseConfig } from "@/lib/supabase";
 import {
   Home,
   GitFork,
@@ -35,7 +34,7 @@ export const Route = createFileRoute("/dashboard/_layout")({
 });
 
 function DashboardLayout() {
-  const { profile, signOut, githubToken } = useAuth();
+  const { profile, signOut } = useAuth();
   const [dark, setDark] = useState(true);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const routerState = useRouterState();

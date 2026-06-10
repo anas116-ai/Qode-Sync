@@ -8,17 +8,31 @@ import {
   GitFork,
   Star,
   AlertTriangle,
-  GitCommit,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/analytics")({
   component: AnalyticsPage,
 });
 
+interface RepoStats {
+  total_forks: number;
+  updated_forks: number;
+  critical_updates: number;
+  last_sync: string | null;
+}
+
+interface RepoAnalytic {
+  id: string;
+  name: string;
+  behind: number;
+  stars: number;
+  sync_status?: string;
+}
+
 interface StatCardProps {
   title: string;
   value: number | string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   subtitle?: string;
 }
 
@@ -42,10 +56,9 @@ function StatCard({ title, value, icon: Icon, subtitle }: StatCardProps) {
 interface BarChartProps {
   data: { name: string; value: number; color: string }[];
   maxValue: number;
-  labelKey: string;
 }
 
-function SimpleBarChart({ data, maxValue, labelKey }: BarChartProps) {
+function SimpleBarChart({ data, maxValue }: BarChartProps) {
   if (!data || data.length === 0) {
     return (
       <div className="flex h-48 items-center justify-center text-sm text-warm-400">
@@ -84,7 +97,7 @@ function AnalyticsPage() {
     critical_updates: number;
     last_sync: string | null;
   } | null>(null);
-  const [topRepos, setTopRepos] = useState<any[]>([]);
+  const [topRepos, setTopRepos] = useState<RepoAnalytic[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -102,16 +115,16 @@ function AnalyticsPage() {
   }, [profile?.id]);
 
   const behindData = topRepos
-    .filter((r: any) => r.behind > 0)
-    .sort((a: any, b: any) => b.behind - a.behind)
+    .filter((r) => r.behind > 0)
+    .sort((a, b) => b.behind - a.behind)
     .slice(0, 8)
-    .map((r: any) => ({
+    .map((r) => ({
       name: r.name,
       value: r.behind,
       color: r.behind > 20 ? "#ef4444" : r.behind > 10 ? "#f97316" : "#f59e0b",
     }));
 
-  const starsData = topRepos.slice(0, 8).map((r: any) => ({
+  const starsData = topRepos.slice(0, 8).map((r) => ({
     name: r.name,
     value: r.stars || 0,
     color: "#6366f1",
@@ -176,7 +189,7 @@ function AnalyticsPage() {
             </p>
           </div>
           <div className="p-6">
-            <SimpleBarChart data={behindData} maxValue={maxBehind} labelKey="name" />
+            <SimpleBarChart data={behindData} maxValue={maxBehind} />
           </div>
         </div>
 
@@ -225,7 +238,7 @@ function AnalyticsPage() {
           </div>
         ) : (
           <div className="divide-y divide-warm-200 dark:divide-warm-800">
-            {topRepos.map((repo: any) => (
+            {topRepos.map((repo) => (
               <div
                 key={repo.id || repo.name}
                 className="px-6 py-4 flex items-center justify-between hover:bg-warm-50 dark:hover:bg-warm-800/50 transition-colors"

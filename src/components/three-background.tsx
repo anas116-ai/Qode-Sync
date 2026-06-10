@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 interface Particle {
   x: number;
@@ -13,7 +13,6 @@ interface Particle {
 export function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0 });
   const frameRef = useRef<number>(0);
 
   useEffect(() => {

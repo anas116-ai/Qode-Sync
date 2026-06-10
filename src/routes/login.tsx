@@ -1,15 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useAuth } from "@/lib/providers/auth-provider";
-import {
-  Github,
-  AlertCircle,
-  Sparkles,
-  ShieldCheck,
-  Bell,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+import { AlertCircle, Sparkles, ShieldCheck, Bell, CheckCircle2, Github, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import toast from "react-hot-toast";
 
@@ -50,9 +42,7 @@ function LoginPage() {
   }
 
   async function handleDemoMode() {
-    setLoading(true);
     try {
-      // Create a demo profile without needing a real token
       const demoProfile = {
         id: "demo-user",
         username: "demo",
@@ -63,18 +53,11 @@ function LoginPage() {
         token_status: "valid" as const,
         token_last_validated: new Date().toISOString(),
       };
-      
-      // Save to localStorage
       localStorage.setItem("qodesync_profile", JSON.stringify(demoProfile));
       localStorage.setItem("qodesync_github_token", "demo-token");
-      
-      // Force page reload to pick up the new state
       window.location.href = "/dashboard";
-    } catch (err) {
+    } catch {
       toast.error("Failed to start demo mode");
-      console.error("Demo mode error:", err);
-    } finally {
-      setLoading(false);
     }
   }
 

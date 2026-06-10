@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { GitFork, Home, RefreshCw, Bell, BarChart3, Settings, Bookmark, User } from "lucide-react";
+import { GitFork, Home, Bell, BarChart3, Settings, User } from "lucide-react";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Overview" },

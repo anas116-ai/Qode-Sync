@@ -57,7 +57,9 @@ function loadLocalProfile(): { profile: UserProfile | null; token: string | null
     const raw = localStorage.getItem(LOCAL_PROFILE_KEY);
     const token = localStorage.getItem(LOCAL_TOKEN_KEY);
     if (raw) return { profile: JSON.parse(raw), token };
-  } catch {}
+  } catch {
+    // localStorage parse error — fall through to null
+  }
   return { profile: null, token: null };
 }
 
@@ -107,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     void init();
 
-    let subscription: any = null;
+    let subscription: { unsubscribe: () => void } | null = null;
     if (hasSupabaseConfig) {
       const { data } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
         if (cancelled) return;

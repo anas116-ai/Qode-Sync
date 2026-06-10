@@ -32,7 +32,7 @@ function TeamsPage() {
   useEffect(() => {
     if (!profile?.id) return;
     void loadAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [profile?.id]);
 
   async function loadAll() {

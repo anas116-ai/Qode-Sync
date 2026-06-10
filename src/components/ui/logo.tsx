@@ -21,7 +21,6 @@ const YELLOW_MID = "#c8d930";
 const YELLOW_DARK = "#a8b820";
 const ORANGE_TEXT = "#f97316";
 const ORANGE_DARK = "#ea580c";
-const DARK_BG = "#0a0d18";
 
 function getSize(size: LogoProps["size"]) {
   return sizes[size || "md"];

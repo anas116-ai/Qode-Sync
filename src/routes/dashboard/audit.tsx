@@ -10,10 +10,10 @@ export const Route = createFileRoute("/dashboard/audit")({
 });
 
 const ACTION_COLORS: Record<string, string> = {
-  login: "bg-blue-100 text-blue-700",
+  login: "bg-warm-100 text-warm-700",
   logout: "bg-warm-100 text-warm-700",
   token_refresh: "bg-rosegold-50 text-rosegold-700",
-  repository_sync: "bg-green-100 text-green-700",
+  repository_sync: "bg-brand-100 text-brand-700",
   update_acknowledged: "bg-yellow-100 text-yellow-700",
   notification_sent: "bg-primary/20 text-primary",
   webhook_received: "bg-orange-100 text-orange-700",

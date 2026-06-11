@@ -68,7 +68,7 @@ function SyncNetworkPage() {
         <div>
           <h1 className="text-2xl font-bold text-warm-900 dark:text-white">
             <span className="inline-flex items-center gap-2">
-              <Share2 className="h-6 w-6 text-indigo-500" />
+              <Share2 className="h-6 w-6 text-amber-500" />
               Sync Networks
             </span>
           </h1>
@@ -122,7 +122,7 @@ function SyncNetworkPage() {
                 <p className="text-sm text-warm-500 mt-1">{selectedNetwork.description || "No description"}</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-green-100 dark:bg-green-950 px-3 py-1 text-xs font-medium text-green-700 dark:text-green-400">
+                <span className="rounded-full bg-brand-100 dark:bg-brand-950 px-3 py-1 text-xs font-medium text-brand-700 dark:text-brand-400">
                   {selectedNetwork.status}
                 </span>
                 <button
@@ -164,8 +164,8 @@ function SyncNetworkPage() {
                     <p className="text-xs text-warm-500">{node.is_upstream ? "Upstream" : "Fork"}</p>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    {node.auto_merge && <span className="rounded bg-green-100 dark:bg-green-950 px-2 py-0.5 text-green-700 dark:text-green-400">auto-merge</span>}
-                    {node.sync_enabled && <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />}
+                    {node.auto_merge && <span className="rounded bg-brand-100 dark:bg-brand-950 px-2 py-0.5 text-brand-700 dark:text-brand-400">auto-merge</span>}
+                    {node.sync_enabled && <CheckCircle2 className="h-3.5 w-3.5 text-brand-500" />}
                   </div>
                 </div>
               </div>
@@ -219,7 +219,7 @@ function SyncNetworkPage() {
 
 function NetworkStatusBadge({ status }: { status: string }) {
   const config: Record<string, string> = {
-    active: "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400",
+    active: "bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-400",
     paused: "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
     error: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400",
     archived: "bg-warm-100 dark:bg-warm-800 text-slate-600 dark:text-warm-400",

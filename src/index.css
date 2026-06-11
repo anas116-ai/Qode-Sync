@@ -60,13 +60,18 @@ html {
 body {
   background-color: #0a0d18;
   color: #e2e8f0;
-  font-family: Cabinet Grotesk, Inter, system-ui, sans-serif;
+  font-family: 'Cabinet Grotesk', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .font-stencil {
   font-family: 'Bespoke Stencil', 'Cabinet Grotesk', sans-serif;
+}
+
+/* ═══ Cabinet Grotesk everywhere for modern crisp look ═══ */
+h1, h2, h3, h4, h5, h6, p, span, a, button, li, input, select, textarea, label, th, td {
+  font-family: 'Cabinet Grotesk', 'Inter', system-ui, sans-serif;
 }
 
 ::selection {
@@ -242,10 +247,10 @@ body {
 /* ═══ Colorful Repository Tags ═══ */
 .repo-tag-1 { background: linear-gradient(135deg, #e8f55333, #c8d93022); border-color: rgba(200, 217, 48, 0.3); }
 .repo-tag-2 { background: linear-gradient(135deg, #f9731633, #ea580c22); border-color: rgba(249, 115, 22, 0.3); }
-.repo-tag-3 { background: linear-gradient(135deg, #3b82f633, #2563eb22); border-color: rgba(59, 130, 246, 0.3); }
-.repo-tag-4 { background: linear-gradient(135deg, #a855f733, #7c3aed22); border-color: rgba(168, 85, 247, 0.3); }
-.repo-tag-5 { background: linear-gradient(135deg, #06b6d433, #0891b222); border-color: rgba(6, 182, 212, 0.3); }
-.repo-tag-6 { background: linear-gradient(135deg, #84cc1633, #65a30d22); border-color: rgba(132, 204, 22, 0.3); }
+.repo-tag-3 { background: linear-gradient(135deg, #fbbf2433, #f59e0b22); border-color: rgba(251, 191, 36, 0.3); }
+.repo-tag-4 { background: linear-gradient(135deg, #fb718533, #f43f5e22); border-color: rgba(244, 63, 94, 0.3); }
+.repo-tag-5 { background: linear-gradient(135deg, #fcd34d33, #f59e0b22); border-color: rgba(252, 211, 77, 0.3); }
+.repo-tag-6 { background: linear-gradient(135deg, #c8d93033, #a8b82022); border-color: rgba(200, 217, 48, 0.3); }
 
 /* ═══ Sync Pulse Animation ═══ */
 @keyframes sync-pulse {
@@ -256,33 +261,40 @@ body {
   animation: sync-pulse 2s ease-in-out infinite;
 }
 
-/* ═══ Glitter Sparkle Effect ═══ */
-@keyframes sparkle {
-  0% { transform: scale(0) rotate(0deg); opacity: 0; }
-  50% { transform: scale(1) rotate(180deg); opacity: 0.6; }
-  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+/* ═══ Card hover animation ═══ */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sparkle {
-  position: relative;
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(200, 217, 48, 0.08), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-.sparkle::before,
-.sparkle::after {
-  content: '✦';
+
+.card-hover::before {
+  content: '';
   position: absolute;
-  font-size: 8px;
-  color: #e8f553;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(200, 217, 48, 0.08), rgba(251, 191, 36, 0.04), transparent);
   opacity: 0;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
-.sparkle:hover::before {
-  animation: sparkle 1s ease-in-out infinite;
-  top: -5px;
-  right: -5px;
+.card-hover:hover::before {
+  opacity: 1;
 }
-.sparkle:hover::after {
-  animation: sparkle 1.2s ease-in-out 0.3s infinite;
-  bottom: -5px;
-  left: -5px;
+
+/* ═══ Neon Button Glow Effect ═══ */
+.neon-btn-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.neon-btn-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(232, 245, 83, 0.4), 0 0 40px rgba(232, 245, 83, 0.2), 0 0 60px rgba(249, 115, 22, 0.1);
+}
+.neon-btn-glow:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* ═══ Card entry animation ═══ */

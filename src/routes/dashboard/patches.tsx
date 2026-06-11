@@ -146,7 +146,7 @@ function PatchesPage() {
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{patch.created_at ? new Date(patch.created_at).toLocaleDateString() : ""}</span>
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <span className={`text-xs ${patch.applies_cleanly ? "text-green-600" : "text-red-600"} flex items-center gap-1`}>
+                <span className={`text-xs ${patch.applies_cleanly ? "text-brand-600" : "text-red-600"} flex items-center gap-1`}>
                   {patch.applies_cleanly ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                   {patch.applies_cleanly ? "Applies cleanly" : "Has conflicts"}
                 </span>
@@ -161,8 +161,8 @@ function PatchesPage() {
 
 function PatchStatusBadge({ status }: { status: string }) {
   const config: Record<string, { bg: string; text: string }> = {
-    active: { bg: "bg-green-100 dark:bg-green-950", text: "text-green-700 dark:text-green-400" },
-    applied: { bg: "bg-blue-100 dark:bg-blue-950", text: "text-blue-700 dark:text-blue-400" },
+    active: { bg: "bg-brand-100 dark:bg-brand-950", text: "text-brand-700 dark:text-brand-400" },
+    applied: { bg: "bg-warm-100 dark:bg-warm-950", text: "text-warm-700 dark:text-warm-400" },
     conflicted: { bg: "bg-red-100 dark:bg-red-950", text: "text-red-700 dark:text-red-400" },
     deprecated: { bg: "bg-warm-100 dark:bg-warm-800", text: "text-slate-600 dark:text-warm-400" },
     archived: { bg: "bg-amber-100 dark:bg-amber-950", text: "text-amber-700 dark:text-amber-400" },

@@ -91,19 +91,16 @@ function DashboardLayout() {
           {/* Logo + Brand - Larger typography */}
           <Logo size="lg" variant="combination" showText={true} />
           
-          {/* Sync All Button in Header */}
-          <button
-            onClick={() => {
-              // Trigger sync - navigate to repositories and sync all
-              window.location.href = "/dashboard/repositories";
-            }}
+          {/* Sync All Button in Header - navigates to repos page where sync happens */}
+          <a
+            href="/dashboard/repositories"
             className="hidden sm:inline-flex items-center gap-2 rounded-lg border bg-white/5 px-3 py-1.5 text-xs font-medium text-warm-200 hover:bg-white/10 transition-all"
             style={{ borderColor: "rgba(200, 217, 48, 0.1)" }}
-            title="Sync all forks"
+            title="View repositories to sync forks"
           >
             <GitMerge className="h-3.5 w-3.5" />
             Sync All
-          </button>
+          </a>
 
           {/* Search */}
           <div className="relative ml-2 hidden md:block">

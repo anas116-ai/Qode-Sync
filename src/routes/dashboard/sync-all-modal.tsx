@@ -186,9 +186,9 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                   <p className="text-2xl font-bold text-red-600">{repos.filter((r) => r.behind_count > 0).length}</p>
                   <p className="text-xs text-red-500">Behind</p>
                 </div>
-                <div className="rounded-lg bg-green-50 dark:bg-green-950 p-3 text-center">
-                  <p className="text-2xl font-bold text-green-600">{repos.filter((r) => r.behind_count <= 0).length}</p>
-                  <p className="text-xs text-green-500">Up to Date</p>
+                <div className="rounded-lg bg-brand-50 dark:bg-brand-950 p-3 text-center">
+                  <p className="text-2xl font-bold text-brand-600">{repos.filter((r) => r.behind_count <= 0).length}</p>
+                  <p className="text-xs text-brand-500">Up to Date</p>
                 </div>
                 <div className="rounded-lg bg-amber-50 dark:bg-amber-950 p-3 text-center">
                   <p className="text-2xl font-bold text-amber-600">{repos.filter((r) => r.behind_count > 0 && r.behind_count <= 5).length}</p>
@@ -208,7 +208,7 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
 
           {phase === "running" && (
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 mb-4">
+              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 mb-4">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Processing forks... {results.filter((r) => r.status !== "assessing" && r.status !== "merging").length}/{repos.length}
               </div>
@@ -224,13 +224,13 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                 <div key={r.repo_id} className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">
                   <span className="truncate flex-1">{r.repo_name}</span>
                   {r.status === "completed" ? (
-                    <span className="flex items-center gap-1 text-green-600 text-xs"><CheckCircle2 className="h-3 w-3" />Merged</span>
+                    <span className="flex items-center gap-1 text-brand-600 text-xs"><CheckCircle2 className="h-3 w-3" />Merged</span>
                   ) : r.status === "skipped" ? (
                     <span className="flex items-center gap-1 text-amber-600 text-xs"><Shield className="h-3 w-3" />{r.risk_level}</span>
                   ) : r.status === "failed" ? (
                     <span className="flex items-center gap-1 text-red-600 text-xs"><AlertTriangle className="h-3 w-3" />Failed</span>
                   ) : (
-                    <span className="flex items-center gap-1 text-green-600 text-xs"><CheckCircle2 className="h-3 w-3" />Up to date</span>
+                    <span className="flex items-center gap-1 text-brand-600 text-xs"><CheckCircle2 className="h-3 w-3" />Up to date</span>
                   )}
                 </div>
               ))}
@@ -240,9 +240,9 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
           {phase === "done" && (
             <div className="space-y-4">
               <div className="grid grid-cols-4 gap-3">
-                <div className="rounded-lg bg-green-50 dark:bg-green-950 p-3 text-center">
-                  <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-                  <p className="text-xs text-green-500">Merged</p>
+                <div className="rounded-lg bg-brand-50 dark:bg-brand-950 p-3 text-center">
+                  <p className="text-2xl font-bold text-brand-600">{stats.completed}</p>
+                  <p className="text-xs text-brand-500">Merged</p>
                 </div>
                 <div className="rounded-lg bg-amber-50 dark:bg-amber-950 p-3 text-center">
                   <p className="text-2xl font-bold text-amber-600">{stats.skipped}</p>
@@ -252,9 +252,9 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                   <p className="text-2xl font-bold text-red-600">{stats.failed}</p>
                   <p className="text-xs text-red-500">Failed</p>
                 </div>
-                <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-3 text-center">
-                  <p className="text-2xl font-bold text-blue-600">{stats.up_to_date}</p>
-                  <p className="text-xs text-blue-500">Up to Date</p>
+                <div className="rounded-lg bg-warm-50 dark:bg-warm-950 p-3 text-center">
+                  <p className="text-2xl font-bold text-warm-600">{stats.up_to_date}</p>
+                  <p className="text-xs text-warm-500">Up to Date</p>
                 </div>
               </div>
               <div className="max-h-60 overflow-y-auto space-y-1">
@@ -262,10 +262,10 @@ export function SyncAllModal({ isOpen, onClose }: { isOpen: boolean; onClose: ()
                   <div key={r.repo_id} className="flex items-center justify-between rounded-lg bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">
                     <span className="truncate flex-1">{r.repo_name}</span>
                     <span className={`text-xs flex items-center gap-1 ${
-                      r.status === "completed" ? "text-green-600" :
+                      r.status === "completed" ? "text-brand-600" :
                       r.status === "failed" ? "text-red-600" :
                       r.status === "skipped" ? "text-amber-600" :
-                      "text-blue-600"
+                      "text-warm-600"
                     }`}>
                       {r.status === "completed" ? <><CheckCircle2 className="h-3 w-3" />Merged</> :
                        r.status === "failed" ? <><AlertTriangle className="h-3 w-3" />{r.error?.slice(0, 30)}</> :

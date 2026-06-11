@@ -9,6 +9,7 @@ import {
   Star,
   AlertTriangle,
 } from "lucide-react";
+import { StatsCard, StatsMiniCard } from "@/components/ui/card-styles";
 
 export const Route = createFileRoute("/dashboard/analytics")({
   component: AnalyticsPage,
@@ -31,18 +32,18 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon: Icon, subtitle }: StatCardProps) {
   return (
-    <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-6 shadow-sm">
+    <StatsCard ring>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-warm-500 dark:text-warm-400">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-warm-900 dark:text-white">{value}</p>
-          {subtitle && <p className="mt-1 text-xs text-warm-500 dark:text-warm-400">{subtitle}</p>}
+          <p className="text-sm font-medium text-warm-400">{title}</p>
+          <p className="mt-2 text-3xl font-bold text-white">{value}</p>
+          {subtitle && <p className="mt-1 text-xs text-warm-500">{subtitle}</p>}
         </div>
-        <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-3">
-          <Icon className="h-5 w-5 text-primary dark:text-primary" />
+        <div className="rounded-xl bg-brand-500/10 p-3">
+          <Icon className="h-5 w-5 text-brand-400" />
         </div>
       </div>
-    </div>
+    </StatsCard>
   );
 }
 
@@ -171,43 +172,29 @@ function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 shadow-sm">
-          <div className="px-6 py-4 border-b border-warm-200 dark:border-warm-800">
-            <h2 className="text-base font-semibold text-warm-900 dark:text-white flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" />
-              Commits Behind Upstream
-            </h2>
-            <p className="text-xs text-warm-500 dark:text-warm-400 mt-1">
-              How many commits your forks are behind
-            </p>
+        <StatsCard>
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="h-4 w-4 text-brand-400" />
+            <h2 className="text-base font-semibold text-white">Commits Behind Upstream</h2>
           </div>
-          <div className="p-6">
-            <SimpleBarChart data={behindData} maxValue={maxBehind} />
-          </div>
-        </div>
+          <p className="text-xs text-warm-400 mb-4">How many commits your forks are behind</p>
+          <SimpleBarChart data={behindData} maxValue={maxBehind} />
+        </StatsCard>
 
-        <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 shadow-sm">
-          <div className="px-6 py-4 border-b border-warm-200 dark:border-warm-800">
-            <h2 className="text-base font-semibold text-warm-900 dark:text-white flex items-center gap-2">
-              <Star className="h-4 w-4 text-primary" />
-              Star Count by Repository
-            </h2>
-            <p className="text-xs text-warm-500 dark:text-warm-400 mt-1">
-              Top repositories by stars
-            </p>
+        <StatsCard>
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="h-4 w-4 text-brand-400" />
+            <h2 className="text-base font-semibold text-white">Star Count by Repository</h2>
           </div>
-          <div className="p-6">
-            <SimpleBarChart data={starsData} maxValue={maxStars} />
-          </div>
-        </div>
+          <p className="text-xs text-warm-400 mb-4">Top repositories by stars</p>
+          <SimpleBarChart data={starsData} maxValue={maxStars} />
+        </StatsCard>
       </div>
 
-      <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 shadow-sm">
-        <div className="px-6 py-4 border-b border-warm-200 dark:border-warm-800">
-          <h2 className="text-base font-semibold text-warm-900 dark:text-white flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" />
-            All Repositories
-          </h2>
+      <StatsCard>
+        <div className="flex items-center gap-2 mb-4">
+          <BarChart3 className="h-4 w-4 text-brand-400" />
+          <h2 className="text-base font-semibold text-white">All Repositories</h2>
         </div>
         {loading ? (
           <div className="divide-y divide-warm-200 dark:divide-warm-800">
@@ -262,7 +249,7 @@ function AnalyticsPage() {
             ))}
           </div>
         )}
-      </div>
+      </StatsCard>
     </div>
   );
 }

@@ -234,7 +234,7 @@ function BackportPage() {
             <button
               onClick={handleExecute}
               disabled={selectedShas.size === 0 || executing}
-              className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {executing ? (
                 <>
@@ -282,7 +282,7 @@ function BackportPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                <span className="flex items-center gap-1.5 text-brand-600 dark:text-brand-400">
                   <CheckCircle2 className="h-4 w-4" />
                   {analysis.backportable_count} backportable
                 </span>
@@ -304,7 +304,7 @@ function BackportPage() {
           {analysis.backportable_commits?.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-warm-900 dark:text-white mb-3 flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <CheckCircle2 className="h-4 w-4 text-brand-500" />
                 Backportable Commits
                 <span className="text-xs font-normal text-warm-400">(select which to include)</span>
               </h3>
@@ -398,29 +398,29 @@ function BackportPage() {
 
       {/* Execution Result */}
       {result && (
-        <div className="rounded-xl border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-6 shadow-sm">
+        <div className="rounded-xl border border-brand-200 dark:border-brand-900 bg-brand-50 dark:bg-brand-950/30 p-6 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="rounded-full bg-green-100 dark:bg-green-900 p-2.5">
-              <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <div className="rounded-full bg-brand-100 dark:bg-brand-900 p-2.5">
+              <CheckCircle2 className="h-6 w-6 text-brand-600 dark:text-brand-400" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-green-800 dark:text-green-300">
+              <h3 className="text-lg font-semibold text-brand-800 dark:text-brand-300">
                 Backport Executed Successfully
               </h3>
               <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-green-950/50 rounded-lg px-3 py-2 text-center">
-                  <p className="text-2xl font-bold text-green-700 dark:text-green-300">{result.cherry_picked_commits}</p>
-                  <p className="text-xs text-green-600 dark:text-green-400">Cherry-picked</p>
+                <div className="bg-white dark:bg-brand-950/50 rounded-lg px-3 py-2 text-center">
+                  <p className="text-2xl font-bold text-brand-700 dark:text-brand-300">{result.cherry_picked_commits}</p>
+                  <p className="text-xs text-brand-600 dark:text-brand-400">Cherry-picked</p>
                 </div>
-                <div className="bg-white dark:bg-green-950/50 rounded-lg px-3 py-2 text-center">
+                <div className="bg-white dark:bg-brand-950/50 rounded-lg px-3 py-2 text-center">
                   <p className="text-2xl font-bold text-warm-900 dark:text-white">{result.failed_commits?.length || 0}</p>
                   <p className="text-xs text-warm-500">Failed</p>
                 </div>
-                <div className="bg-white dark:bg-green-950/50 rounded-lg px-3 py-2 text-center">
+                <div className="bg-white dark:bg-brand-950/50 rounded-lg px-3 py-2 text-center">
                   <p className="text-2xl font-bold text-warm-900 dark:text-white">{result.pr_created ? "Yes" : "No"}</p>
                   <p className="text-xs text-warm-500">PR Created</p>
                 </div>
-                <div className="bg-white dark:bg-green-950/50 rounded-lg px-3 py-2 text-center">
+                <div className="bg-white dark:bg-brand-950/50 rounded-lg px-3 py-2 text-center">
                   <p className="text-xs font-mono text-warm-600 dark:text-warm-300 truncate">{result.backport_branch}</p>
                   <p className="text-xs text-warm-500">Branch</p>
                 </div>
@@ -431,7 +431,7 @@ function BackportPage() {
                     href={result.pr_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 transition-colors shadow-sm"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Open Pull Request #{result.pr_number}

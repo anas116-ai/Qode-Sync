@@ -159,7 +159,7 @@ function UpdatesPage() {
         </div>
         <button
           onClick={detectUpdates}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-700 transition-colors shadow-sm"
         >
           <RefreshCw className="h-4 w-4" />
           Detect Updates
@@ -177,7 +177,7 @@ function UpdatesPage() {
         </div>
         <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm">
           <p className="text-sm text-warm-500 dark:text-warm-400">New</p>
-          <p className="mt-1 text-2xl font-bold text-indigo-600">{updateStats.new}</p>
+          <p className="mt-1 text-2xl font-bold text-amber-600">{updateStats.new}</p>
         </div>
       </div>
 
@@ -318,7 +318,7 @@ function getSeverityBg(severity: string) {
     case "medium":
       return "bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400";
     default:
-      return "bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400";
+      return "bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400";
   }
 }
 
@@ -340,7 +340,7 @@ function SeverityBadge({ severity }: { severity: UpdateSeverity }) {
     critical: "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400 ring-1 ring-red-600/20",
     high: "bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-400 ring-1 ring-orange-600/20",
     medium: "bg-yellow-50 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-400 ring-1 ring-yellow-600/20",
-    low: "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 ring-1 ring-green-600/20",
+    low: "bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400 ring-1 ring-brand-600/20",
   };
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${colors[severity || "low"] || colors.low}`}>

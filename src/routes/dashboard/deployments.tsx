@@ -81,8 +81,8 @@ function DeploymentsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard title="Total Deployments" value={stats.total} icon={Rocket} color="indigo" />
-        <StatCard title="Healthy" value={stats.healthy} icon={CheckCircle2} color="emerald" />
+        <StatCard title="Total Deployments" value={stats.total} icon={Rocket} color="amber" />
+        <StatCard title="Healthy" value={stats.healthy} icon={CheckCircle2} color="brand" />
         <StatCard title="Failed" value={stats.failed} icon={XCircle} color="red" />
         <StatCard title="In Progress" value={stats.deploying} icon={Loader2} color="amber" />
       </div>
@@ -103,8 +103,8 @@ function DeploymentsPage() {
                   </div>
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-xs">
-                  {config.auto_deploy && <span className="rounded bg-green-100 dark:bg-green-950 px-2 py-0.5 text-green-700 dark:text-green-400">auto-deploy</span>}
-                  {config.deploy_on_sync && <span className="rounded bg-blue-100 dark:bg-blue-950 px-2 py-0.5 text-blue-700 dark:text-blue-400">on sync</span>}
+                  {config.auto_deploy && <span className="rounded bg-brand-100 dark:bg-brand-950 px-2 py-0.5 text-brand-700 dark:text-brand-400">auto-deploy</span>}
+                  {config.deploy_on_sync && <span className="rounded bg-warm-100 dark:bg-warm-950 px-2 py-0.5 text-warm-700 dark:text-warm-400">on sync</span>}
                   {config.last_deployed_at && (
                     <span className="text-warm-400 ml-auto">{new Date(config.last_deployed_at).toLocaleDateString()}</span>
                   )}
@@ -140,7 +140,7 @@ function DeploymentsPage() {
               <div key={dep.id} className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-start gap-4">
                   <div className={`rounded-lg p-2 flex-shrink-0 ${
-                    dep.status === "healthy" ? "bg-green-100 dark:bg-green-950 text-green-600" :
+                    dep.status === "healthy" ? "bg-brand-100 dark:bg-brand-950 text-brand-600" :
                     dep.status === "failed" ? "bg-red-100 dark:bg-red-950 text-red-600" :
                     "bg-amber-100 dark:bg-amber-950 text-amber-600"
                   }`}>
@@ -179,10 +179,9 @@ function DeploymentsPage() {
 
 function StatCard({ title, value, icon: Icon, color }: { title: string; value: number; icon: any; color: string }) {
   const colors: Record<string, string> = {
-    indigo: "from-primary to-primary-600",
-    emerald: "from-primary to-primary-600",
-    red: "from-red-500 to-pink-500",
     amber: "from-amber-500 to-orange-500",
+    brand: "from-brand-500 to-brand-600",
+    red: "from-red-500 to-rose-500",
   };
   return (
     <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm">
@@ -201,11 +200,9 @@ function StatCard({ title, value, icon: Icon, color }: { title: string; value: n
 
 function DeployStatusBadge({ status }: { status: string }) {
   const config: Record<string, string> = {
-    healthy: "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400",
-    failed: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400",
-    deploying: "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400",
-    building: "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
-    rolled_back: "bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-400",
+    healthy: "bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-400",
+    failed: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400",        deploying: "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
+    rolled_back: "bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400",
   };
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${config[status] || config.failed}`}>

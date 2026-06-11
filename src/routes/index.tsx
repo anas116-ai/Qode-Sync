@@ -21,25 +21,23 @@ import {
   Menu,
   X,
   Quote,
-  ArrowUpRight,
-  Code2,
-  Workflow,
-  RefreshCw,
   LogOut,
   ArrowLeft,
+  Rocket,
 } from "lucide-react";
 import { Logo } from "../components/ui/logo";
-
-/* ═══ Qode Sync brand gradients ═══ */
-const brandGrad = "from-brand-500 via-violet-500 to-cyan-400";
+import { VyralityCard } from "../components/ui/card-styles";
+import ThreeScene from "../components/three-scene";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } };
+const fadeIn = { hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } };
 const stagger = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } } };
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
+/* ═══ GALAXY ANIMATED BACKGROUND ═══ */
 /* ═══ REUSABLE COMPONENTS ═══ */
 
 function Section({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) {
@@ -63,31 +61,20 @@ function Btn({ children, href, variant = "primary", className = "", icon }: {
   children: React.ReactNode; href: string; variant?: "primary" | "secondary" | "ghost"; className?: string; icon?: React.ReactNode;
 }) {
   const styles = {
-    primary: "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/35 active:scale-[0.97]",
-    secondary: "bg-white/5 hover:bg-white/10 text-white border border-white/10 active:scale-[0.97]",
-    ghost: "text-white/60 hover:text-white hover:bg-white/5",
+    primary: "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-400 hover:to-brand-500 text-[#0a0d18] shadow-lg shadow-brand-500/25 hover:shadow-brand-500/35 active:scale-[0.97] neon-btn-glow",
+    secondary: "bg-white/5 hover:bg-white/[0.08] text-white border border-white/10 hover:border-white/20 backdrop-blur-sm active:scale-[0.97]",
+    ghost: "text-white/50 hover:text-white hover:bg-white/[0.06] active:scale-[0.97]",
   };
   return (
     <motion.a
       href={href}
-      className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${styles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${styles[variant]} ${className}`}
       whileHover={{ scale: 1.02, y: -1 }}
       whileTap={{ scale: 0.98 }}
     >
       {children}
       {icon && <span className="transition-transform group-hover:translate-x-0.5">{icon}</span>}
     </motion.a>
-  );
-}
-
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <motion.div
-      className={`relative rounded-xl border border-white/[0.06] bg-white/[0.03] p-6 transition-all hover:border-brand-500/20 hover:bg-white/[0.05] hover:shadow-lg hover:shadow-brand-500/[0.03] ${className}`}
-      whileHover={{ y: -3 }}
-    >
-      {children}
-    </motion.div>
   );
 }
 
@@ -100,7 +87,6 @@ function Navbar() {
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn, { passive: true });
-    // Check if user is logged in (has profile in localStorage)
     const profile = localStorage.getItem("qodesync_profile");
     setShowLoggedIn(!!profile);
     return () => window.removeEventListener("scroll", fn);
@@ -125,7 +111,7 @@ function Navbar() {
         scrolled ? "glass border-b border-brand-500/20" : "bg-transparent"
       }`} />
       <div className="relative max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-        <Logo size="md" />
+        <Logo size="lg" />
         <nav className="hidden md:flex items-center gap-1">
           {links.map((l) => (
             <a key={l.href} href={l.href} className="px-3 py-2 text-sm text-white/50 hover:text-brand-300 transition-colors rounded-lg hover:bg-brand-500/10">
@@ -158,7 +144,7 @@ function Navbar() {
         {!showLoggedIn && (
           <div className="hidden md:flex items-center gap-3">
             <Btn href="/login" variant="ghost">Sign in</Btn>
-            <Btn href="/login" variant="primary" className="text-[#0a0d18]" icon={<ArrowRight className="w-3.5 h-3.5" />}>Get started</Btn>
+            <Btn href="/login" variant="primary" icon={<ArrowRight className="w-3.5 h-3.5" />}>Get started</Btn>
           </div>
         )}
         <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white/60 hover:text-white">
@@ -181,7 +167,7 @@ function Navbar() {
               ))}
               <div className="flex gap-3 mt-3 pt-3 border-t border-white/[0.06]">
                 <Btn href="/login" variant="secondary">Sign in</Btn>
-                <Btn href="/login" variant="primary" className="text-[#0a0d18]">Get started</Btn>
+                <Btn href="/login" variant="primary">Get started</Btn>
               </div>
             </nav>
           </motion.div>
@@ -191,97 +177,96 @@ function Navbar() {
   );
 }
 
-/* ═══ GALAXY BACKGROUND ═══ */
-function GalaxyBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const starsRef = useRef<Array<{x: number, y: number, r: number, speed: number}>>([]);
-  const frameRef = useRef(0);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    function resize() {
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      starsRef.current = Array.from({ length: 80 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.5 + 0.3,
-        speed: Math.random() * 0.05 + 0.02,
-      }));
-    }
-    resize();
-    window.addEventListener("resize", resize);
-
-    function animate() {
-      if (!canvas || !ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      starsRef.current.forEach((star) => {
-        star.y += star.speed;
-        if (star.y > canvas.height) star.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(232, 245, 83, ${0.3 + Math.sin(Date.now() * 0.001) * 0.1})`;
-        ctx.fill();
-      });
-
-      frameRef.current = requestAnimationFrame(animate);
-    }
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(frameRef.current);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />;
-}
-
-/* ═══ HERO ═══ */
+/* ═══ HERO with Galaxy Solar System ═══ */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-space">
-      {/* Animated nebula clouds */}
-      <div className="absolute inset-0">
-        <div className="absolute top-10 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000" />
-      </div>
-      <GalaxyBackground />
-      
-      {/* Aurora glow orbs — lemon yellow */}
-      <div className="absolute top-20 left-[15%] w-[500px] h-[500px] rounded-full bg-brand-500/15 blur-[150px] animate-aurora" />
-      <div className="absolute bottom-20 right-[15%] w-[400px] h-[400px] rounded-full bg-brand-400/10 blur-[120px] animate-aurora-slow" />
-      <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-brand-300/8 blur-[100px] animate-aurora" />
+      {/* Three.js Solar System Background */}
+      <ThreeScene />
 
-      <div className="absolute inset-0 bg-grid opacity-40" />
+      {/* Animated nebula clouds */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-[15%] w-[600px] h-[600px] rounded-full bg-brand-500/12 blur-[150px] animate-aurora" />
+        <div className="absolute bottom-10 right-[10%] w-[500px] h-[500px] rounded-full bg-amber-400/10 blur-[120px] animate-aurora-slow" />
+        <div className="absolute top-[30%] left-[40%] w-[400px] h-[400px] rounded-full bg-rose-300/8 blur-[100px] animate-aurora" />
+      </div>
+
+      {/* Floating animated decorative orbs */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{ top: "15%", left: "8%" }}
+        animate={{ y: [0, -20, 0], opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="w-4 h-4 rounded-full bg-brand-400/30 blur-sm" />
+      </motion.div>
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{ top: "70%", right: "12%" }}
+        animate={{ y: [0, 15, 0], opacity: [0.2, 0.5, 0.2] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      >
+        <div className="w-6 h-6 rounded-full bg-amber-400/20 blur-sm" />
+      </motion.div>
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{ top: "40%", left: "50%" }}
+        animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.3, 0.1] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+      >
+        <div className="w-8 h-8 rounded-full bg-rose-400/15 blur-md" />
+      </motion.div>
+
+      {/* Grid overlay */}
+      <div className="absolute inset-0 bg-grid opacity-30" />
 
       <motion.div style={{ y, opacity }} className="relative z-10 max-w-4xl mx-auto px-4 text-center pt-24 pb-32">
         <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.1 }}>
-          <Badge>AI-powered fork monitoring</Badge>
+          <Badge>
+            <Sparkles className="w-3 h-3" />
+            AI-powered fork monitoring
+          </Badge>
         </motion.div>
 
         <motion.h1
-          initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.2, duration: 0.6 }}
-          className="font-stencil text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
+          initial="hidden" animate="visible"
+          style={{ display: "inline-flex", flexWrap: "wrap", gap: "0.1em", lineHeight: "1.1" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } }
+          }}
+          className="font-stencil text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white"
         >
-          Stop checking forks
-          <br />
-          <span className="text-gradient-warm">
-            one by one.
-          </span>
+          {["Stop", "checking", "forks"].map((word, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
+                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5 } }
+              }}
+              className="text-gradient-warm"
+            >
+              {word}
+            </motion.span>
+          ))}
+          <br className="hidden sm:block" />
+          {["one", "by", "one."].map((word, i) => (
+            <motion.span
+              key={"line2-" + i}
+              variants={{
+                hidden: { opacity: 0, y: 30, filter: "blur(4px)" },
+                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5 } }
+              }}
+              className="text-gradient-warm"
+            >
+              {word}
+            </motion.span>
+          ))}
         </motion.h1>
 
         <motion.p
@@ -293,7 +278,7 @@ function Hero() {
         </motion.p>
 
         <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.5 }} className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Btn href="/login" variant="primary" className="px-7 py-3 text-base text-[#0a0d18]" icon={<ArrowRight className="w-5 h-5" />}>
+          <Btn href="/login" variant="primary" className="px-7 py-3 text-base" icon={<ArrowRight className="w-5 h-5" />}>
             Get started free
           </Btn>
           <Btn href="#features" variant="secondary" className="px-7 py-3 text-base">
@@ -311,17 +296,29 @@ function Hero() {
           ))}
         </motion.div>
 
-        {/* Dashboard preview */}
-        <motion.div initial="hidden" animate="visible" variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }}
-          transition={{ delay: 0.8, duration: 0.7 }} className="mt-14 max-w-4xl mx-auto"
+        {/* Dashboard preview card with animated gradient border */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.7 }}
+          className="mt-14 max-w-4xl mx-auto"
         >
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-brand-500/20 via-violet-500/15 to-cyan-500/10 rounded-xl blur-lg group-hover:from-brand-500/30 group-hover:via-violet-500/20 group-hover:to-cyan-500/15 transition-all duration-500" />
-            <div className="relative rounded-xl border border-brand-500/15 bg-[#0f1525]/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-brand-500/5">
+          <div className="group relative rounded-xl overflow-hidden transition-all duration-500 hover:-translate-y-2">
+            {/* Animated gradient border */}
+            <div className="absolute inset-0 rounded-xl opacity-40 group-hover:opacity-100 transition-all duration-700"
+              style={{
+                background: "linear-gradient(135deg, rgba(232,245,83,0.4), rgba(249,115,22,0.3), rgba(251,113,133,0.2))",
+                padding: "1px",
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+            <div className="relative rounded-xl border border-brand-500/15 bg-[#0f1525]/80 backdrop-blur-xl overflow-hidden shadow-2xl shadow-brand-500/10 group-hover:shadow-brand-500/20 transition-all duration-500">
               <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-4 py-2.5 bg-white/[0.02]">
                 <span className="w-2.5 h-2.5 rounded-full bg-brand-500/30" />
-                <span className="w-2.5 h-2.5 rounded-full bg-violet-500/30" />
-                <span className="w-2.5 h-2.5 rounded-full bg-cyan-500/30" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/30" />
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/30" />
                 <span className="ml-2 text-[11px] text-white/25 font-mono">app.qodesync.dev</span>
               </div>
               <div className="grid grid-cols-3 divide-x divide-white/[0.06]">
@@ -350,6 +347,11 @@ function Hero() {
                 ))}
               </div>
             </div>
+
+            {/* Glow */}
+            <div className="absolute -inset-4 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-700 blur-3xl pointer-events-none"
+              style={{ background: "radial-gradient(circle at center, rgba(232,245,83,0.08), transparent 70%)" }}
+            />
           </div>
         </motion.div>
       </motion.div>
@@ -373,18 +375,18 @@ function TrustBar() {
   );
 }
 
-/* ═══ FEATURES ═══ */
+/* ═══ FEATURES - Colorful Animated Cards ═══ */
 function Features() {
   const items = [
     { icon: Zap, title: "Auto-discovery", desc: "Connect once. We find every fork, detect the upstream, and start monitoring instantly.", color: "text-brand-400" },
-    { icon: Bell, title: "Smart notifications", desc: "Slack, Discord, Telegram, Teams, email, web push. Choose per repo or per event.", color: "text-violet-400" },
-    { icon: Sparkles, title: "AI summaries", desc: "Each update gets a one-line summary plus detailed explanation from our AI assistant.", color: "text-cyan-400" },
+    { icon: Bell, title: "Smart notifications", desc: "Slack, Discord, Telegram, Teams, email, web push. Choose per repo or per event.", color: "text-amber-400" },
+    { icon: Sparkles, title: "AI summaries", desc: "Each update gets a one-line summary plus detailed explanation from our AI assistant.", color: "text-rose-400" },
     { icon: ShieldCheck, title: "Security alerts", desc: "CVEs and Dependabot advisories affecting your upstreams. Never miss a critical patch.", color: "text-rose-400" },
     { icon: BarChart3, title: "Analytics", desc: "See which upstreams change most, active maintainers, and fork health scores.", color: "text-brand-400" },
-    { icon: Lock, title: "Safe auto-sync", desc: "One-click sync with conflict detection, backup branches, and rollback.", color: "text-violet-400" },
-    { icon: Layers, title: "Multi-repo dashboards", desc: "Organize by team, project, or priority. Filter, sort, and bulk-apply.", color: "text-cyan-400" },
+    { icon: Lock, title: "Safe auto-sync", desc: "One-click sync with conflict detection, backup branches, and rollback.", color: "text-amber-400" },
+    { icon: Layers, title: "Multi-repo dashboards", desc: "Organize by team, project, or priority. Filter, sort, and bulk-apply.", color: "text-rose-400" },
     { icon: Cpu, title: "Custom AI agents", desc: "Configure per-repo AI behavior. Get diffs summarized and release notes generated.", color: "text-brand-400" },
-    { icon: Cloud, title: "Self-host or cloud", desc: "Docker Compose, Helm charts, or managed cloud. Full data control either way.", color: "text-violet-400" },
+    { icon: Cloud, title: "Self-host or cloud", desc: "Docker Compose, Helm charts, or managed cloud. Full data control either way.", color: "text-amber-400" },
   ];
 
   return (
@@ -397,17 +399,17 @@ function Features() {
         </h2>
         <p className="mt-4 text-white/40 max-w-xl mx-auto">Built for developers who maintain dozens of forks across multiple upstreams.</p>
       </motion.div>
-      <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
         {items.map((it) => (
-          <motion.div key={it.title} variants={fadeUp} className="group">
-            <Card>
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-500/20 to-violet-500/20 flex items-center justify-center mb-4 border border-brand-500/15 group-hover:border-brand-500/30 transition-colors">
-                <it.icon className={`w-5 h-5 ${it.color}`} />
+          <VyralityCard key={it.title} className="">
+            <div className="flex flex-col h-full">
+              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500/20 to-amber-500/20 flex items-center justify-center mb-4 border border-brand-500/15 group-hover:border-brand-500/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-brand-500/10">
+                <it.icon className={`w-5 h-5 ${it.color} transition-transform duration-300 group-hover:scale-110`} />
               </div>
-              <h3 className="font-display font-semibold text-white mb-2">{it.title}</h3>
-              <p className="text-sm text-white/40 leading-relaxed">{it.desc}</p>
-            </Card>
-          </motion.div>
+              <h3 className="font-display font-semibold text-white mb-2 group-hover:text-gradient-warm transition-all duration-300">{it.title}</h3>
+              <p className="text-sm text-white/40 leading-relaxed flex-1">{it.desc}</p>
+            </div>
+          </VyralityCard>
         ))}
       </motion.div>
     </Section>
@@ -435,14 +437,14 @@ function HowItWorks() {
         {steps.map((s, i) => (
           <motion.div key={s.num} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: i * 0.1 }} className="text-center group">
             <div className="relative inline-flex mb-5">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-brand-500 via-violet-500 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-shadow">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-brand-500 via-amber-500 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:shadow-brand-500/40 transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-1">
                 <s.icon className="w-7 h-7" />
               </div>
-              <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#0c0f1a] border border-brand-500/20 flex items-center justify-center text-xs font-bold text-brand-400">
+              <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white/[0.04] border border-brand-500/20 flex items-center justify-center text-xs font-bold text-brand-400 group-hover:bg-brand-500/20 group-hover:border-brand-500/40 transition-all">
                 {s.num}
               </span>
             </div>
-            <h3 className="font-display font-semibold text-white mb-2">{s.title}</h3>
+            <h3 className="font-display font-semibold text-white mb-2 group-hover:text-gradient-warm transition-all">{s.title}</h3>
             <p className="text-sm text-white/40 max-w-xs mx-auto">{s.desc}</p>
           </motion.div>
         ))}
@@ -454,30 +456,45 @@ function HowItWorks() {
 /* ═══ STATS ═══ */
 function Stats() {
   const stats = [
-    { val: "2.4M+", label: "Forks monitored" },
-    { val: "180k+", label: "Developers" },
-    { val: "14M+", label: "Updates delivered" },
-    { val: "99.98%", label: "Uptime" },
+    { val: "2.4M+", label: "Forks monitored", icon: GitBranch },
+    { val: "180k+", label: "Developers", icon: Rocket },
+    { val: "14M+", label: "Updates delivered", icon: Bell },
+    { val: "99.98%", label: "Uptime", icon: ShieldCheck },
   ];
   return (
     <Section>
-      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-        className="rounded-2xl border border-brand-500/10 bg-gradient-to-br from-brand-500/[0.08] via-violet-500/[0.04] to-cyan-500/[0.03] p-10 md:p-14 shadow-xl shadow-brand-500/[0.03]"
+      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}
+        className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1"
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {stats.map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-brand-200 to-brand-400 bg-clip-text text-transparent">{s.val}</p>
-              <p className="mt-1 text-xs text-white/35 uppercase tracking-wider">{s.label}</p>
-            </div>
-          ))}
+        {/* Animated gradient border */}
+        <div className="absolute inset-0 rounded-2xl opacity-40 group-hover:opacity-100 transition-all duration-700"
+          style={{
+            background: "linear-gradient(135deg, rgba(232,245,83,0.4), rgba(249,115,22,0.25), rgba(251,113,133,0.2))",
+            padding: "1px",
+            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+        <div className="relative rounded-2xl border border-brand-500/10 bg-gradient-to-br from-brand-500/[0.08] via-amber-500/[0.04] to-rose-500/[0.03] p-10 md:p-14 shadow-xl shadow-brand-500/[0.03]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((s) => (
+              <div key={s.label} className="group/stat">
+                <div className="w-10 h-10 mx-auto rounded-xl bg-brand-500/10 flex items-center justify-center mb-3 group-hover/stat:bg-brand-500/20 transition-all group-hover/stat:scale-110">
+                  <s.icon className="w-5 h-5 text-brand-400" />
+                </div>
+                <p className="text-3xl md:text-4xl font-bold bg-gradient-to-b from-brand-200 to-brand-400 bg-clip-text text-transparent">{s.val}</p>
+                <p className="mt-1 text-xs text-white/35 uppercase tracking-wider">{s.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </motion.div>
     </Section>
   );
 }
 
-/* ═══ PRICING ═══ */
+/* ═══ PRICING - Colorful Animated Cards ═══ */
 function Pricing() {
   const tiers = [
     {
@@ -487,6 +504,8 @@ function Pricing() {
       features: ["Up to 50 forks", "Email notifications", "Community support", "All AI features"],
       cta: "Get started",
       popular: false,
+      gradient: "from-brand-500/20 via-brand-500/5 to-transparent",
+      btnStyle: "border border-white/10 text-white/60 hover:bg-brand-500/5 hover:border-brand-500/20 active:scale-[0.97]",
     },
     {
       name: "Pro",
@@ -496,6 +515,8 @@ function Pricing() {
       features: ["Unlimited forks", "Slack / Discord / Teams", "Auto-sync with safety", "Priority AI", "Email support"],
       cta: "Start free trial",
       popular: true,
+      gradient: "from-brand-500/15 via-amber-500/10 to-rose-500/5",
+      btnStyle: "bg-gradient-to-r from-brand-500 via-amber-500 to-rose-500 hover:from-brand-400 hover:via-amber-400 hover:to-rose-400 text-white shadow-lg shadow-brand-500/25 active:scale-[0.97]",
     },
     {
       name: "Team",
@@ -505,6 +526,8 @@ function Pricing() {
       features: ["Everything in Pro", "Org-wide dashboards", "Audit log & RBAC", "SSO + SLA", "Dedicated support"],
       cta: "Contact sales",
       popular: false,
+      gradient: "from-amber-500/20 via-rose-500/5 to-transparent",
+      btnStyle: "border border-white/10 text-white/60 hover:bg-amber-500/5 hover:border-amber-500/20 active:scale-[0.97]",
     },
   ];
 
@@ -519,47 +542,39 @@ function Pricing() {
       </motion.div>
       <div className="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto">
         {tiers.map((t) => (
-          <motion.div key={t.name} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-            className={`relative rounded-xl border p-6 flex flex-col transition-all hover:-translate-y-1 ${
-              t.popular
-              ? "border-brand-500/20 bg-brand-500/[0.08] shadow-lg shadow-brand-500/10"
-              : "border-white/[0.06] bg-white/[0.02] hover:border-brand-500/20 hover:shadow-lg hover:shadow-brand-500/5"
-            }`}
-          >
-            {t.popular && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-brand-500 via-violet-500 to-cyan-500 text-[10px] font-semibold uppercase tracking-wider text-white shadow-lg shadow-brand-500/30">
-                Most popular
-              </span>
-            )}
-            <h3 className="font-display font-semibold text-white">{t.name}</h3>
-            <p className="text-xs text-white/35 mt-0.5">{t.desc}</p>
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-white">{t.price}</span>
-              {t.period && <span className="text-xs text-white/30">{t.period}</span>}
+          <VyralityCard key={t.name}>
+            <div className="flex flex-col h-full">
+              {t.popular && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-brand-500 via-amber-500 to-rose-500 text-[10px] font-semibold uppercase tracking-wider text-white shadow-lg shadow-brand-500/30 z-20">
+                  Most popular
+                </span>
+              )}
+              <h3 className="font-display font-semibold text-white">{t.name}</h3>
+              <p className="text-xs text-white/35 mt-0.5">{t.desc}</p>
+              <div className="mt-4 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-white">{t.price}</span>
+                {t.period && <span className="text-xs text-white/30">{t.period}</span>}
+              </div>
+              <ul className="mt-6 space-y-3 text-sm flex-1">
+                {t.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 group/feat">
+                    <CheckCircle2 className="w-4 h-4 mt-0.5 text-brand-400/70 shrink-0 group-hover/feat:text-brand-400 transition-colors" />
+                    <span className="text-white/50 group-hover/feat:text-white/70 transition-colors">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <a href="/dashboard" className={`mt-6 block text-center py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${t.btnStyle}`}>
+                {t.cta}
+              </a>
             </div>
-            <ul className="mt-6 space-y-3 text-sm flex-1">
-              {t.features.map((f) => (
-                <li key={f} className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 mt-0.5 text-brand-400/70 shrink-0" />
-                  <span className="text-white/50">{f}</span>
-                </li>
-              ))}
-            </ul>
-            <a href="/dashboard" className={`mt-6 block text-center py-2.5 rounded-lg text-sm font-medium transition-all ${
-              t.popular
-                ? "bg-gradient-to-r from-brand-500 via-violet-500 to-cyan-500 hover:from-brand-400 hover:via-violet-400 hover:to-cyan-400 text-white shadow-lg shadow-brand-500/25 active:scale-[0.97]"
-                : "border border-white/10 text-white/60 hover:bg-brand-500/5 hover:border-brand-500/20"
-            }`}>
-              {t.cta}
-            </a>
-          </motion.div>
+          </VyralityCard>
         ))}
       </div>
     </Section>
   );
 }
 
-/* ═══ TESTIMONIALS ═══ */
+/* ═══ TESTIMONIALS - Colorful Cards ═══ */
 function Testimonials() {
   const items = [
     { quote: "I used to spend an hour every Monday catching up on forks. Now I get a single Slack message.", name: "Priya R.", role: "Senior Engineer @ Acme", initials: "PR" },
@@ -577,13 +592,13 @@ function Testimonials() {
           <span className="text-gradient-warm">developers</span>
         </h2>
       </motion.div>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-5">
         {items.map((t) => (
-          <Card key={t.name}>
-            <Quote className="w-6 h-6 text-brand-500/30 mb-3" />
+          <VyralityCard key={t.name}>
+            <Quote className="w-6 h-6 text-brand-500/30 mb-3 group-hover:text-brand-500/50 transition-colors" />
             <p className="text-sm text-white/50 leading-relaxed">"{t.quote}"</p>
             <div className="mt-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-violet-500 flex items-center justify-center text-white text-xs font-semibold shadow-lg shadow-brand-500/20">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-amber-500 flex items-center justify-center text-white text-xs font-semibold shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/30 group-hover:scale-110 transition-all">
                 {t.initials}
               </div>
               <div>
@@ -591,7 +606,7 @@ function Testimonials() {
                 <p className="text-xs text-white/30">{t.role}</p>
               </div>
             </div>
-          </Card>
+          </VyralityCard>
         ))}
       </div>
     </Section>
@@ -630,23 +645,37 @@ function FaqItem({ q, a, delay }: { q: string; a: string; delay: number }) {
   const [open, setOpen] = useState(false);
   return (
     <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay }}
-      className={`rounded-lg border overflow-hidden transition-colors ${
+      className={`group relative rounded-lg overflow-hidden transition-all duration-300 ${
         open ? "border-brand-500/20 bg-brand-500/[0.03]" : "border-white/[0.06] bg-white/[0.02]"
       }`}
     >
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between gap-4 p-4 text-left">
-        <span className="text-sm font-medium text-white/80">{q}</span>
-        <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-brand-400 text-lg leading-none">+</motion.span>
-      </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }} className="overflow-hidden"
-          >
-            <p className="px-4 pb-4 text-sm text-white/35 leading-relaxed">{a}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Animated border on open */}
+      {open && (
+        <div className="absolute inset-0 rounded-lg opacity-60"
+          style={{
+            background: "linear-gradient(135deg, rgba(232,245,83,0.3), rgba(249,115,22,0.15), transparent)",
+            padding: "1px",
+            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+      )}
+      <div className="relative z-10">
+        <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between gap-4 p-4 text-left">
+          <span className="text-sm font-medium text-white/80">{q}</span>
+          <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-brand-400 text-lg leading-none w-5 h-5 flex items-center justify-center">+</motion.span>
+        </button>
+        <AnimatePresence>
+          {open && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }} className="overflow-hidden"
+            >
+              <p className="px-4 pb-4 text-sm text-white/35 leading-relaxed">{a}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }
@@ -655,18 +684,30 @@ function FaqItem({ q, a, delay }: { q: string; a: string; delay: number }) {
 function CTA() {
   return (
     <Section>
-      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-        className="text-center relative rounded-2xl border border-brand-500/10 bg-gradient-to-b from-brand-500/[0.1] via-violet-500/[0.05] to-transparent py-16 px-6 shadow-xl shadow-brand-500/[0.03]"
+      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}
+        className="group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1"
       >
-        <Badge>Get started</Badge>
-        <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mt-3">
-          Ready to stop checking forks{" "}
-          <span className="text-gradient-warm">one by one?</span>
-        </h2>
-        <p className="mt-4 text-white/40 max-w-md mx-auto">Free during beta. No credit card required.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Btn href="/login" variant="primary" className="px-7 py-3 text-[#0a0d18]" icon={<ArrowRight className="w-4 h-4" />}>Get started for free</Btn>
-          <Btn href="#features" variant="secondary" className="px-7 py-3">Talk to sales</Btn>
+        {/* Animated gradient border */}
+        <div className="absolute inset-0 rounded-2xl opacity-40 group-hover:opacity-100 transition-all duration-700"
+          style={{
+            background: "linear-gradient(135deg, rgba(232,245,83,0.4), rgba(249,115,22,0.3), rgba(251,113,133,0.2))",
+            padding: "1px",
+            WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
+        <div className="relative text-center rounded-2xl border border-brand-500/10 bg-gradient-to-b from-brand-500/[0.1] via-amber-500/[0.05] to-transparent py-16 px-6 shadow-xl shadow-brand-500/[0.03]">
+          <Badge>Get started</Badge>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mt-3">
+            Ready to stop checking forks{" "}
+            <span className="text-gradient-warm">one by one?</span>
+          </h2>
+          <p className="mt-4 text-white/40 max-w-md mx-auto">Free during beta. No credit card required.</p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Btn href="/login" variant="primary" className="px-7 py-3" icon={<ArrowRight className="w-4 h-4" />}>Get started for free</Btn>
+            <Btn href="#features" variant="secondary" className="px-7 py-3">Talk to sales</Btn>
+          </div>
         </div>
       </motion.div>
     </Section>
@@ -734,3 +775,4 @@ function LandingPage() {
     </div>
   );
 }
+

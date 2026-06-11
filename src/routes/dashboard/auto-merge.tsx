@@ -116,8 +116,8 @@ function AutoMergePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard title="Total Merges" value={stats.total} icon={GitMerge} color="indigo" />
-        <StatCard title="Completed" value={stats.completed} icon={CheckCircle2} color="emerald" />
+        <StatCard title="Total Merges" value={stats.total} icon={GitMerge} color="amber" />
+        <StatCard title="Completed" value={stats.completed} icon={CheckCircle2} color="brand" />
         <StatCard title="Failed" value={stats.failed} icon={XCircle} color="red" />
         <StatCard title="Pending" value={stats.pending} icon={Clock} color="amber" />
       </div>
@@ -196,7 +196,7 @@ function AutoMergePage() {
                       {job.behind_commits} behind
                     </span>
                     <span className="flex items-center gap-1">
-                      <ArrowUpRight className="h-3 w-3 text-blue-400" />
+                      <ArrowUpRight className="h-3 w-3 text-amber-400" />
                       {job.ahead_commits} ahead
                     </span>
                     {job.merge_commit_sha && (
@@ -226,7 +226,7 @@ function AutoMergePage() {
                     <button
                       onClick={() => handleMerge(job.repository_id)}
                       disabled={executing === job.repository_id}
-                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary-700 disabled:opacity-50 transition-colors"
                     >
                       {executing === job.repository_id ? "Merging..." : "Merge Now"}
                     </button>
@@ -243,12 +243,12 @@ function AutoMergePage() {
 
 function getStatusStyle(status: string) {
   switch (status) {
-    case "completed": return { bg: "bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400", text: "text-green-700" };
+    case "completed": return { bg: "bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400", text: "text-brand-800" };
     case "failed": return { bg: "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400", text: "text-red-700" };
     case "conflict": return { bg: "bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400", text: "text-orange-700" };
     case "blocked": return { bg: "bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400", text: "text-amber-700" };
-    case "merging": return { bg: "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400", text: "text-blue-700" };
-    case "rolled_back": return { bg: "bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400", text: "text-purple-700" };
+    case "merging": return { bg: "bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400", text: "text-amber-700" };
+    case "rolled_back": return { bg: "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400", text: "text-rose-700" };
     default: return { bg: "bg-warm-100 dark:bg-warm-800 text-slate-600 dark:text-warm-400", text: "text-slate-600" };
   }
 }
@@ -277,8 +277,8 @@ function StatusBadge({ status }: { status: string }) {
 function RiskBadge({ level }: { level?: string }) {
   if (!level) return null;
   const colors: Record<string, string> = {
-    safe: "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400",
-    low: "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400",
+    safe: "bg-brand-100 dark:bg-brand-950 text-brand-800 dark:text-brand-400",
+    low: "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
     medium: "bg-yellow-100 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-400",
     high: "bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400",
     critical: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-400",
@@ -292,10 +292,9 @@ function RiskBadge({ level }: { level?: string }) {
 
 function StatCard({ title, value, icon: Icon, color }: { title: string; value: number; icon: any; color: string }) {
   const colors: Record<string, string> = {
-    indigo: "from-primary to-primary-600",
-    emerald: "from-primary to-primary-600",
-    red: "from-red-500 to-pink-500",
     amber: "from-amber-500 to-orange-500",
+    brand: "from-brand-500 to-brand-600",
+    red: "from-red-500 to-rose-500",
   };
   return (
     <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm">

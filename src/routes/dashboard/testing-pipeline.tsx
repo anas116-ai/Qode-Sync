@@ -89,7 +89,7 @@ function TestingPipelinePage() {
         </div>
         <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm">
           <p className="text-xs font-medium text-warm-500 dark:text-warm-400 uppercase tracking-wide">Passed</p>
-          <p className="mt-2 text-3xl font-bold text-green-600">{stats.passed}</p>
+          <p className="mt-2 text-3xl font-bold text-brand-600">{stats.passed}</p>
         </div>
         <div className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm">
           <p className="text-xs font-medium text-warm-500 dark:text-warm-400 uppercase tracking-wide">Failed</p>
@@ -149,7 +149,7 @@ function TestingPipelinePage() {
             <div key={run.id} className="rounded-xl border border-warm-200 dark:border-warm-800 bg-white dark:bg-warm-900 p-5 shadow-sm hover:shadow-md transition-all">
               <div className="flex items-start gap-4">
                 <div className={`rounded-lg p-2 flex-shrink-0 ${
-                  run.status === "passed" ? "bg-green-100 dark:bg-green-950 text-green-600" :
+                  run.status === "passed" ? "bg-brand-100 dark:bg-brand-950 text-brand-600" :
                   run.status === "failed" ? "bg-red-100 dark:bg-red-950 text-red-600" :
                   "bg-amber-100 dark:bg-amber-950 text-amber-600"
                 }`}>
@@ -160,7 +160,7 @@ function TestingPipelinePage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className={`text-sm font-semibold ${
-                      run.status === "passed" ? "text-green-700 dark:text-green-400" :
+                      run.status === "passed" ? "text-brand-700 dark:text-brand-400" :
                       run.status === "failed" ? "text-red-700 dark:text-red-400" : "text-amber-700 dark:text-amber-400"
                     }`}>
                       {run.status === "passed" ? "Passed" : run.status === "failed" ? "Failed" : "Running"}
@@ -199,8 +199,8 @@ function TestingPipelinePage() {
                   <p className="text-xs text-warm-500 mt-0.5">{pipeline.framework} • {pipeline.command}</p>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  {pipeline.run_on_merge && <span className="rounded bg-green-100 dark:bg-green-950 px-2 py-0.5 text-green-700 dark:text-green-400">pre-merge</span>}
-                  {pipeline.collect_coverage && <span className="rounded bg-blue-100 dark:bg-blue-950 px-2 py-0.5 text-blue-700 dark:text-blue-400">coverage</span>}
+                  {pipeline.run_on_merge && <span className="rounded bg-brand-100 dark:bg-brand-950 px-2 py-0.5 text-brand-700 dark:text-brand-400">pre-merge</span>}
+                  {pipeline.collect_coverage && <span className="rounded bg-warm-100 dark:bg-warm-950 px-2 py-0.5 text-warm-700 dark:text-warm-400">coverage</span>}
                 </div>
               </div>
             </div>

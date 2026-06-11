@@ -105,13 +105,13 @@ function ImpactAnalyzerPage() {
   );
 
   function getScoreColor(score: number) {
-    if (score < 30) return "text-green-500";
+    if (score < 30) return "text-brand-500";
     if (score < 60) return "text-amber-500";
     return "text-red-500";
   }
 
   function getScoreBg(score: number) {
-    if (score < 30) return "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900";
+    if (score < 30) return "bg-brand-50 dark:bg-brand-950/30 border-brand-200 dark:border-brand-900";
     if (score < 60) return "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900";
     return "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900";
   }
@@ -234,8 +234,8 @@ function ImpactAnalyzerPage() {
 
                 <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                   <MetricCard label="Behind" value={impact.behind_count} icon={ArrowUpRight} color="red" />
-                  <MetricCard label="Ahead" value={impact.ahead_count} icon={TrendingUp} color="blue" />
-                  <MetricCard label="Commits" value={impact.total_commits} icon={GitFork} color="indigo" />
+                  <MetricCard label="Ahead" value={impact.ahead_count} icon={TrendingUp} color="amber" />
+                  <MetricCard label="Commits" value={impact.total_commits} icon={GitFork} color="amber" />
                   <MetricCard label="Files Changed" value={impact.total_files_changed} icon={FileCode} color="amber" />
                 </div>
               </div>
@@ -246,7 +246,7 @@ function ImpactAnalyzerPage() {
                   title="API Changes"
                   data={impact.categorized_changes?.api_changes}
                   icon={Globe}
-                  color="indigo"
+                  color="amber"
                 />
                 <CategoryCard
                   title="Config Changes"
@@ -258,19 +258,19 @@ function ImpactAnalyzerPage() {
                   title="Dependency Changes"
                   data={impact.categorized_changes?.dependency_changes}
                   icon={GitFork}
-                  color="purple"
+                  color="rose"
                 />
                 <CategoryCard
                   title="Test Changes"
                   data={impact.categorized_changes?.test_changes}
                   icon={CheckCircle2}
-                  color="emerald"
+                  color="brand"
                 />
                 <CategoryCard
                   title="Documentation Changes"
                   data={impact.categorized_changes?.documentation_changes}
                   icon={BookOpen}
-                  color="blue"
+                  color="warm"
                 />
                 <CategoryCard
                   title="Source Code Changes"
@@ -340,7 +340,7 @@ function ImpactAnalyzerPage() {
               <button
                 onClick={handleCrossRepoAnalyze}
                 disabled={!crossRepoName.trim() || analyzing}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm h-[42px]"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm h-[42px]"
               >
                 {analyzing ? (
                   <><RefreshCw className="h-4 w-4 animate-spin" /> Analyzing…</>
@@ -385,7 +385,7 @@ function ImpactAnalyzerPage() {
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`rounded-lg p-2 flex-shrink-0 ${
                           fork.error ? "bg-red-100 dark:bg-red-950" :
-                          fork.impact_score < 30 ? "bg-green-100 dark:bg-green-950" :
+                          fork.impact_score < 30 ? "bg-brand-100 dark:bg-brand-950" :
                           fork.impact_score < 60 ? "bg-amber-100 dark:bg-amber-950" :
                           "bg-red-100 dark:bg-red-950"
                         }`}>
@@ -446,14 +446,12 @@ function ImpactAnalyzerPage() {
 function MetricCard({ label, value, icon: Icon, color }: { label: string; value: number; icon: any; color: string }) {
   const colorMap: Record<string, string> = {
     red: "text-red-500 bg-red-50 dark:bg-red-950/50",
-    blue: "text-blue-500 bg-blue-50 dark:bg-blue-950/50",
-    indigo: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/50",
     amber: "text-amber-500 bg-amber-50 dark:bg-amber-950/50",
   };
   return (
     <div className="bg-white dark:bg-warm-900/50 rounded-lg p-3 border border-warm-100 dark:border-warm-800">
       <div className="flex items-center gap-2">
-        <div className={`rounded-md p-1.5 ${colorMap[color] || colorMap.indigo}`}>
+        <div className={`rounded-md p-1.5 ${colorMap[color] || colorMap.amber}`}>
           <Icon className="h-3.5 w-3.5" />
         </div>
         <span className="text-2xl font-bold text-warm-900 dark:text-white">{value}</span>
@@ -467,11 +465,10 @@ function CategoryCard({ title, data, icon: Icon, color }: { title: string; data?
   const files = data?.files || [];
   const count = data?.count || 0;
   const colorMap: Record<string, string> = {
-    indigo: "text-indigo-500 bg-indigo-50 dark:bg-indigo-950/50",
     amber: "text-amber-500 bg-amber-50 dark:bg-amber-950/50",
-    purple: "text-purple-500 bg-purple-50 dark:bg-purple-950/50",
-    emerald: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/50",
-    blue: "text-blue-500 bg-blue-50 dark:bg-blue-950/50",
+    rose: "text-rose-500 bg-rose-50 dark:bg-rose-950/50",
+    brand: "text-brand-500 bg-brand-50 dark:bg-brand-950/50",
+    warm: "text-warm-500 bg-warm-50 dark:bg-warm-950/50",
     slate: "text-slate-500 bg-slate-50 dark:bg-slate-950/50",
   };
   return (

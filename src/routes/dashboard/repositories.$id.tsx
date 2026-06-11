@@ -249,7 +249,7 @@ function RepositoryDetailPage() {
                     ) : u.update_type === "breaking_change" ? (
                       <AlertTriangle className="h-4 w-4 text-orange-500 mt-0.5" />
                     ) : u.update_type === "pull_request_merged" ? (
-                      <GitPullRequest className="h-4 w-4 text-blue-500 mt-0.5" />
+                      <GitPullRequest className="h-4 w-4 text-warm-500 mt-0.5" />
                     ) : (
                       <GitCommit className="h-4 w-4 text-warm-500 mt-0.5" />
                     )}

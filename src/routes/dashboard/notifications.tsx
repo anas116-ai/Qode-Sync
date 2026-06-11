@@ -7,19 +7,14 @@ import {
   Inbox,
   CheckCircle2,
   Circle,
-  Mail,
-  MessageSquare,
-  Webhook,
   CheckCheck,
   GitMerge,
   Loader2,
   RefreshCw,
   GitCommit,
-  Tag,
-  Shield,
   AlertTriangle,
-  ArrowLeft,
 } from "lucide-react";
+import { NvdaCard, NvdaBadge } from "@/components/ui/card-styles";
 
 export const Route = createFileRoute("/dashboard/notifications")({
   component: NotificationsPage,
@@ -46,6 +41,7 @@ interface RepoInfo {
   html_url: string;
   parent?: { full_name: string; html_url: string };
   pushed_at: string;
+  default_branch?: string;
 }
 
 function timeAgo(iso: string) {
@@ -189,42 +185,66 @@ function NotificationsPage() {
       const repo = repos.find((r) => r.full_name === fullName);
       if (!repo || !repo.parent) return;
 
-      // Get upstream default branch SHA
-      const upstreamRes = await fetch(
-        `https://api.github.com/repos/${repo.parent.full_name}/git/refs/heads/main`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: "application/vnd.github+json",
-          },
-        }
-      );
-      if (!upstreamRes.ok) return;
-      const upstreamRef = await upstreamRes.json();
-      const upstreamSha = upstreamRef.object.sha;
+      const branch = repo.default_branch || "main";
 
-      // Update fork branch to match upstream
-      const updateRes = await fetch(
-        `https://api.github.com/repos/${fullName}/git/refs/heads/main`,
+      // Use GitHub's merge-upstream API (same as "Fetch upstream" button on GitHub)
+      const mergeRes = await fetch(
+        `https://api.github.com/repos/${fullName}/merge-upstream`,
         {
-          method: "PATCH",
+          method: "POST",
           headers: {
             Authorization: `Bearer ${githubToken}`,
             Accept: "application/vnd.github+json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ sha: upstreamSha, force: false }),
+          body: JSON.stringify({ branch }),
         }
       );
 
-      if (updateRes.ok) {
-        // Remove from updates
+      if (mergeRes.ok) {
+        // Sync successful — remove from updates
         setUpstreamUpdates((prev) => {
           const next = { ...prev };
           delete next[fullName];
           return next;
         });
         setNotifications((prev) => prev.filter((n) => n.repo_full_name !== fullName));
+      } else if (mergeRes.status === 409) {
+        // Merge conflict — try force-push as fallback
+        try {
+          const upstreamRefRes = await fetch(
+            `https://api.github.com/repos/${repo.parent.full_name}/git/refs/heads/${branch}`,
+            {
+              headers: {
+                Authorization: `Bearer ${githubToken}`,
+                Accept: "application/vnd.github+json",
+              },
+            }
+          );
+          if (upstreamRefRes.ok) {
+            const upstreamRef = await upstreamRefRes.json();
+            const forceRes = await fetch(
+              `https://api.github.com/repos/${fullName}/git/refs/heads/${branch}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${githubToken}`,
+                  Accept: "application/vnd.github+json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ sha: upstreamRef.object.sha, force: true }),
+              }
+            );
+            if (forceRes.ok) {
+              setUpstreamUpdates((prev) => {
+                const next = { ...prev };
+                delete next[fullName];
+                return next;
+              });
+              setNotifications((prev) => prev.filter((n) => n.repo_full_name !== fullName));
+            }
+          }
+        } catch { /* silent fallback */ }
       }
     } catch { /* silent */ }
     setSyncing((prev) => ({ ...prev, [fullName]: false }));
@@ -276,7 +296,7 @@ function NotificationsPage() {
           {notificationStats.unread > 0 && (
             <button
               onClick={markAllAsRead}
-              className="inline-flex items-center gap-2 rounded-lg border border-[#1a1f35] bg-[#0c0f1a] px-4 py-2 text-sm font-medium text-warm-200 hover:bg-[#1a1f35] transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-medium text-warm-200 hover:bg-[#1a1f35] transition-colors"
             >
               <CheckCheck className="h-4 w-4" />
               Dismiss all
@@ -286,11 +306,11 @@ function NotificationsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-5">
           <p className="text-xs text-warm-400 uppercase tracking-wide">Updates Detected</p>
           <p className="mt-1 text-2xl font-bold text-white">{notificationStats.total}</p>
         </div>
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-5">
           <p className="text-xs text-warm-400 uppercase tracking-wide">Pending Sync</p>
           <p className="mt-1 text-2xl font-bold text-rose-400">{upstreamUpdatesCount}</p>
         </div>
@@ -303,13 +323,13 @@ function NotificationsPage() {
             placeholder="Search fork activity..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-[#1a1f35] bg-[#0c0f1a] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-warm-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-warm-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-[#1a1f35] bg-[#0c0f1a] px-4 py-2.5 text-sm text-warm-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm text-warm-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="all">All</option>
           <option value="unread">Unread</option>
@@ -320,7 +340,7 @@ function NotificationsPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5">
+            <div key={i} className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-5">
               <div className="animate-pulse space-y-3">
                 <div className="h-4 bg-[#1a1f35] rounded w-3/4" />
                 <div className="h-3 bg-[#1a1f35] rounded w-1/2" />
@@ -330,7 +350,7 @@ function NotificationsPage() {
           ))}
         </div>
       ) : filteredNotifs.length === 0 ? (
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-12 text-center">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-12 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#1a1f35]">
             <Inbox className="h-8 w-8 text-warm-500" />
           </div>
@@ -344,14 +364,7 @@ function NotificationsPage() {
             const isSyncing = syncing[notification.repo_full_name];
 
             return (
-              <div
-                key={notification.id}
-                className={`rounded-xl border p-5 shadow-sm transition-all ${
-                  !notification.is_read
-                    ? "border-rose-500/20 bg-rose-500/5"
-                    : "border-[#1a1f35] bg-[#0f1530]"
-                } hover:shadow-md`}
-              >
+              <NvdaCard key={notification.id} className={`${!notification.is_read ? "border border-rose-500/30" : ""}`}>
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 pt-0.5">
                     {!notification.is_read ? (
@@ -418,14 +431,14 @@ function NotificationsPage() {
                     {!notification.is_read && (
                       <button
                         onClick={() => markAsRead(notification.id)}
-                        className="rounded-lg px-3 py-2 text-xs font-medium text-warm-400 hover:text-white hover:bg-white/5 transition-colors border border-[#1a1f35]"
+                        className="rounded-lg px-3 py-2 text-xs font-medium text-warm-400 hover:text-white hover:bg-white/5 transition-colors border border-white/[0.08]"
                       >
                         Dismiss
                       </button>
                     )}
                   </div>
                 </div>
-              </div>
+              </NvdaCard>
             );
           })}
         </div>

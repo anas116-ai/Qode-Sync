@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/providers/auth-provider";
 import {
@@ -7,20 +7,15 @@ import {
   RefreshCw,
   Star,
   AlertCircle,
-  CheckCircle,
-  XCircle,
-  MoreVertical,
   ExternalLink,
   Bookmark,
-  Activity,
-  TrendingUp,
   ArrowLeft,
   Clock,
   GitCommit,
-  GitPullRequest,
-  Bell,
   GitMerge,
+  LogOut,
 } from "lucide-react";
+import { NutritionCard, NutritionProgressBar, NutritionMiniCard } from "@/components/ui/card-styles";
 import { toast } from "react-hot-toast";
 
 export const Route = createFileRoute("/dashboard/repositories")({
@@ -157,6 +152,7 @@ async function checkForUpstreamUpdates(token: string, repo: RepoItem): Promise<U
 
 function RepositoriesPage() {
   const { profile, githubToken } = useAuth();
+  const router = useRouter();
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -212,11 +208,11 @@ useEffect(() => {
     return results;
   }
 
-  // Sync single repo - actually fetch upstream and merge
+  // Sync single repo - use GitHub's merge-upstream API (like "Fetch upstream" button)
   async function handleSyncRepo(fullName: string) {
     if (!githubToken) return;
     setSyncStatuses((prev) => ({ ...prev, [fullName]: "Syncing..." }));
-    
+
     try {
       const repo = repos.find((r) => r.full_name === fullName);
       if (!repo || !repo.fork || !repo.parent) {
@@ -224,71 +220,32 @@ useEffect(() => {
         return;
       }
 
-      // Fetch upstream default branch
-      const upstreamRes = await fetch(
-        `https://api.github.com/repos/${repo.parent.full_name}/git/refs/heads/${repo.parent.default_branch || "main"}`,
+      // Use GitHub's merge-upstream API — this creates an actual merge commit
+      // just like clicking "Fetch upstream" → "Fetch and merge" on GitHub.com
+      const mergeRes = await fetch(
+        `https://api.github.com/repos/${fullName}/merge-upstream`,
         {
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: "application/vnd.github+json",
-          },
-        }
-      );
-      if (!upstreamRes.ok) {
-        setSyncStatuses((prev) => ({ ...prev, [fullName]: `GitHub API error (${upstreamRes.status})` }));
-        return;
-      }
-      const upstreamRef = await upstreamRes.json();
-      const upstreamSha = upstreamRef.object.sha;
-
-      // Get the fork's latest commit SHA
-      const forkRes = await fetch(
-        `https://api.github.com/repos/${fullName}/git/refs/heads/${repo.default_branch || "main"}`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubToken}`,
-            Accept: "application/vnd.github+json",
-          },
-        }
-      );
-      if (!forkRes.ok) {
-        setSyncStatuses((prev) => ({ ...prev, [fullName]: `Error getting fork ref` }));
-        return;
-      }
-      const forkRef = await forkRes.json();
-      const forkSha = forkRef.object.sha;
-
-      if (upstreamSha === forkSha) {
-        setSyncStatuses((prev) => ({ ...prev, [fullName]: "Already up to date ✓" }));
-        setTimeout(() => setSyncStatuses((prev) => {
-          const next = { ...prev };
-          delete next[fullName];
-          return next;
-        }), 3000);
-        return;
-      }
-
-      // Actually sync: Create a merge commit by updating the branch to upstream
-      // This performs the actual sync by updating the fork's branch
-      const updateRes = await fetch(
-        `https://api.github.com/repos/${fullName}/git/refs/heads/${repo.default_branch || "main"}`,
-        {
-          method: "PATCH",
+          method: "POST",
           headers: {
             Authorization: `Bearer ${githubToken}`,
             Accept: "application/vnd.github+json",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            sha: upstreamSha,
-            force: false,
+            branch: repo.default_branch || "main",
           }),
         }
       );
 
-      if (updateRes.ok) {
-        setSyncStatuses((prev) => ({ ...prev, [fullName]: "✓ Synced successfully" }));
-        // Remove the update indicator since we just synced
+      if (mergeRes.ok) {
+        const data = await mergeRes.json();
+        const message = data.merge_type === "merge"
+          ? "✓ Merged upstream changes"
+          : data.merge_type === "fast-forward"
+            ? "✓ Fast-forwarded to upstream"
+            : "✓ Synced successfully";
+        setSyncStatuses((prev) => ({ ...prev, [fullName]: message }));
+        // Remove the update indicator
         setUpstreamUpdates((prev) => {
           const next = { ...prev };
           delete next[fullName];
@@ -296,12 +253,57 @@ useEffect(() => {
         });
         // Refresh repos list
         loadRepos();
+      } else if (mergeRes.status === 409) {
+        // 409 = merge conflict — try force-push as fallback (safe for forks
+        // where the fork has only upstream commits + own commits)
+        try {
+          const upstreamRefRes = await fetch(
+            `https://api.github.com/repos/${repo.parent.full_name}/git/refs/heads/${repo.parent.default_branch || "main"}`,
+            {
+              headers: {
+                Authorization: `Bearer ${githubToken}`,
+                Accept: "application/vnd.github+json",
+              },
+            }
+          );
+          if (upstreamRefRes.ok) {
+            const upstreamRef = await upstreamRefRes.json();
+            const forceRes = await fetch(
+              `https://api.github.com/repos/${fullName}/git/refs/heads/${repo.default_branch || "main"}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${githubToken}`,
+                  Accept: "application/vnd.github+json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  sha: upstreamRef.object.sha,
+                  force: true,
+                }),
+              }
+            );
+            if (forceRes.ok) {
+              setSyncStatuses((prev) => ({ ...prev, [fullName]: "✓ Force-synced with upstream" }));
+              setUpstreamUpdates((prev) => {
+                const next = { ...prev };
+                delete next[fullName];
+                return next;
+              });
+              loadRepos();
+            } else {
+              const err = await forceRes.json().catch(() => ({}));
+              setSyncStatuses((prev) => ({ ...prev, [fullName]: `✗ Conflict — manual merge needed: ${err.message || "Resolve conflicts on GitHub"}` }));
+            }
+          } else {
+            setSyncStatuses((prev) => ({ ...prev, [fullName]: "✗ Merge conflict — manual sync needed on GitHub" }));
+          }
+        } catch {
+          setSyncStatuses((prev) => ({ ...prev, [fullName]: "✗ Merge conflict — resolve manually on GitHub" }));
+        }
       } else {
-        const errData = await updateRes.json().catch(() => ({}));
-        setSyncStatuses((prev) => ({
-          ...prev,
-          [fullName]: `Merge needed: ${errData.message || "Conflicts may exist"}`,
-        }));
+        const errData = await mergeRes.json().catch(() => ({}));
+        setSyncStatuses((prev) => ({ ...prev, [fullName]: `✗ Sync failed: ${errData.message || `HTTP ${mergeRes.status}`}` }));
       }
     } catch {
       setSyncStatuses((prev) => ({ ...prev, [fullName]: "Network error" }));
@@ -319,17 +321,33 @@ useEffect(() => {
   const hasNewUpdates = Object.keys(upstreamUpdates).length > 0;
   const newUpdatesCount = Object.values(upstreamUpdates).filter((u) => u.hasUpdate).length;
 
-  // Sync all forks at once
+  // Sync all forks at once - detect updates first, then sync each
   async function handleSyncAll() {
     if (!githubToken || forkedRepos.length === 0) return;
     setSyncing(true);
-    const syncToast = toast.loading(`Syncing ${forkedRepos.length} forks...`);
-    
-    for (const repo of forkedRepos.slice(0, 10)) {
-      await handleSyncRepo(repo.full_name);
+    const syncToast = toast.loading(`Checking ${forkedRepos.length} forks for upstream updates...`);
+
+    // First detect updates
+    const updates = await detectAllUpdates();
+    const reposToSync = updates && Object.keys(updates).length > 0
+      ? forkedRepos.filter((r) => updates[r.full_name]?.hasUpdate)
+      : forkedRepos;
+
+    if (reposToSync.length === 0) {
+      toast.success("All forks are up to date! ✓", { id: syncToast });
+      setSyncing(false);
+      return;
     }
-    
-    toast.success(`Sync complete! Updated ${Object.keys(syncStatuses).length} forks`, { id: syncToast });
+
+    const toast2 = toast.loading(`Syncing ${reposToSync.length} forks...`);
+    let syncedCount = 0;
+    for (const repo of reposToSync.slice(0, 10)) {
+      await handleSyncRepo(repo.full_name);
+      syncedCount++;
+    }
+
+    toast.success(`Sync complete! Updated ${syncedCount} fork${syncedCount > 1 ? 's' : ''}`, { id: toast2 });
+    toast.dismiss(syncToast);
     setSyncing(false);
   }
 
@@ -350,14 +368,14 @@ useEffect(() => {
 
   return (
     <div className="px-6 py-6 lg:px-8 space-y-6 max-w-7xl mx-auto">
-      {/* Header with Back Button */}
+      {/* Header with Back Button + Logout */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => router.navigate({ to: "/dashboard" })}
             className="flex h-9 w-9 items-center justify-center rounded-lg text-warm-400 hover:bg-white/5 transition-colors"
-            title="Go back"
-            aria-label="Go back"
+            title="Go back to dashboard"
+            aria-label="Go back to dashboard"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
@@ -372,7 +390,7 @@ useEffect(() => {
           <button
             onClick={detectAllUpdates}
             disabled={detectingUpdates || forkedRepos.length === 0}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#1a1f35] bg-[#0c0f1a] px-4 py-2.5 text-sm font-medium text-warm-200 hover:bg-[#1a1f35] disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-warm-200 hover:bg-[#1a1f35] disabled:opacity-50 transition-colors"
           >
             <RefreshCw className={`h-4 w-4 ${detectingUpdates ? "animate-spin" : ""}`} />
             {detectingUpdates ? "Checking..." : newUpdatesCount > 0 ? `${newUpdatesCount} Updates Found` : "Check Updates"}
@@ -394,6 +412,17 @@ useEffect(() => {
             <RefreshCw className="h-4 w-4" />
             Refresh
           </button>
+          <button
+            onClick={async () => {
+              localStorage.removeItem("qodesync_profile");
+              localStorage.removeItem("qodesync_github_token");
+              window.location.href = "/login";
+            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-rose-500/30 px-4 py-2.5 text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-all"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
         </div>
       </div>
 
@@ -405,13 +434,13 @@ useEffect(() => {
             placeholder="Search repositories..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-[#1a1f35] bg-[#0c0f1a] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-warm-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
+            className="w-full rounded-lg border border-white/[0.08] bg-white/[0.04] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-warm-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-[#1a1f35] bg-[#0c0f1a] px-4 py-2.5 text-sm text-warm-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm text-warm-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           <option value="all">All</option>
           <option value="forked">Forked</option>
@@ -422,31 +451,35 @@ useEffect(() => {
 
       {/* Stats bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-4">
+        <NutritionCard>
           <p className="text-xs text-warm-400 uppercase tracking-wide">Total</p>
           <p className="mt-1 text-2xl font-bold text-white">{repos.length}</p>
-        </div>
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-4">
+          <NutritionProgressBar value={100} color="brand" />
+        </NutritionCard>
+        <NutritionCard>
           <p className="text-xs text-warm-400 uppercase tracking-wide">Forks</p>
           <p className="mt-1 text-2xl font-bold text-amber-400">{forkedRepos.length}</p>
-        </div>
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-4">
+          <NutritionProgressBar value={(forkedRepos.length / Math.max(repos.length, 1)) * 100} color="amber" />
+        </NutritionCard>
+        <NutritionCard>
           <p className="text-xs text-warm-400 uppercase tracking-wide">Updates</p>
-          <p className={`mt-1 text-2xl font-bold ${newUpdatesCount > 0 ? "text-rose-400" : "text-green-400"}`}>
+          <p className={`mt-1 text-2xl font-bold ${newUpdatesCount > 0 ? "text-rose-400" : "text-brand-400"}`}>
             {newUpdatesCount}
           </p>
-        </div>
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-4">
+          <NutritionProgressBar value={newUpdatesCount > 0 ? (newUpdatesCount / Math.max(forkedRepos.length, 1)) * 100 : 0} color="rose" />
+        </NutritionCard>
+        <NutritionCard>
           <p className="text-xs text-warm-400 uppercase tracking-wide">Own</p>
           <p className="mt-1 text-2xl font-bold text-brand-400">{ownedRepos.length}</p>
-        </div>
+          <NutritionProgressBar value={(ownedRepos.length / Math.max(repos.length, 1)) * 100} color="brand" />
+        </NutritionCard>
       </div>
 
       {/* Repos Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5">
+            <div key={i} className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-5">
               <div className="animate-pulse space-y-3">
                 <div className="h-4 bg-[#1a1f35] rounded w-3/4" />
                 <div className="h-3 bg-[#1a1f35] rounded w-1/2" />
@@ -456,7 +489,7 @@ useEffect(() => {
           ))}
         </div>
       ) : filteredRepos.length === 0 ? (
-        <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-12 text-center">
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-12 text-center">
           <GitFork className="h-12 w-12 mx-auto text-warm-500 mb-3" />
           <h3 className="text-sm font-semibold text-white">No repositories found</h3>
           <p className="mt-2 text-sm text-warm-400">
@@ -469,10 +502,7 @@ useEffect(() => {
             const update = upstreamUpdates[repo.full_name];
             const syncMsg = syncStatuses[repo.full_name];
             return (
-              <div
-                key={repo.id}
-                className="relative rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5 shadow-sm hover:shadow-md hover:border-brand-500/20 transition-all"
-              >
+              <NutritionCard key={repo.id}>
                 {/* Update badge */}
                 {update?.hasUpdate && (
                   <div className="absolute -top-2.5 right-4 z-10">
@@ -554,13 +584,13 @@ useEffect(() => {
 
                 {/* Sync message */}
                 {syncMsg && (
-                  <div className={`mt-2 text-xs ${syncMsg.includes('✓') ? 'text-green-400' : syncMsg.includes('Syncing') ? 'text-brand-400' : 'text-warm-400'}`}>
+                  <div className={`mt-2 text-xs ${syncMsg.includes('✓') ? 'text-brand-400' : syncMsg.includes('Syncing') ? 'text-brand-400' : 'text-warm-400'}`}>
                     {syncMsg}
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="mt-4 flex items-center justify-between pt-3 border-t border-[#1a1f35]">
+                <div className="mt-4 flex items-center justify-between pt-3 border-t border-white/[0.08]">
                   <span className="text-[10px] text-warm-500">
                     {repo.default_branch}
                   </span>
@@ -582,7 +612,7 @@ useEffect(() => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </NutritionCard>
             );
           })}
         </div>

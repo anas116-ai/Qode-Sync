@@ -17,7 +17,9 @@ import {
   GitMerge,
   Loader2,
   ExternalLink,
+  LogOut,
 } from "lucide-react";
+import { MarketsCard, MarketsRow } from "@/components/ui/card-styles";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardPage,
@@ -189,7 +191,7 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
           </button>
           <a
             href="/dashboard/notifications"
-            className="inline-flex items-center gap-2 rounded-lg border border-[#1a1f35] bg-[#0c0f1a] px-4 py-2 text-sm font-medium text-warm-200 hover:bg-[#1a1f35] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.04] px-4 py-2 text-sm font-medium text-warm-200 hover:bg-white/[0.08] hover:border-white/20 transition-all"
           >
             <Bell className="h-4 w-4" />
             Notifications
@@ -202,15 +204,42 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
             <Sparkles className="h-4 w-4" />
             Ask AI
           </a>
+          <button
+            onClick={async () => {
+              localStorage.removeItem("qodesync_profile");
+              localStorage.removeItem("qodesync_github_token");
+              window.location.href = "/login";
+            }}
+            className="inline-flex items-center gap-2 rounded-lg border border-rose-500/30 px-4 py-2 text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-all"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
         </div>
       </div>
 
       {/* STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Repos" value={loading ? "..." : totalRepos} icon={GitFork} color="primary" trend={`${totalForks} forks`} />
-        <StatCard title="Forked" value={loading ? "..." : totalForks} icon={GitFork} color="amber" trend="From upstream" />
-        <StatCard title="Synced" value={loading ? "..." : Object.keys(syncResults).length} icon={CheckCircle2} color="warm" trend="This session" />
-        <StatCard title="Last Sync" value={lastSync ? timeAgo(lastSync) : "Never"} icon={Activity} color="primary" trend="Auto every 6h" />
+        <MarketsCard>
+          <p className="text-xs text-warm-400 uppercase tracking-wider">Total Repos</p>
+          <p className="mt-2 text-3xl font-bold text-white">{loading ? "..." : totalRepos}</p>
+          <p className="mt-1 text-xs text-warm-400">{totalForks} forks</p>
+        </MarketsCard>
+        <MarketsCard>
+          <p className="text-xs text-warm-400 uppercase tracking-wider">Forked</p>
+          <p className="mt-2 text-3xl font-bold text-amber-400">{loading ? "..." : totalForks}</p>
+          <p className="mt-1 text-xs text-warm-400">From upstream</p>
+        </MarketsCard>
+        <MarketsCard>
+          <p className="text-xs text-warm-400 uppercase tracking-wider">Synced</p>
+          <p className="mt-2 text-3xl font-bold text-brand-400">{loading ? "..." : Object.keys(syncResults).length}</p>
+          <p className="mt-1 text-xs text-warm-400">This session</p>
+        </MarketsCard>
+        <MarketsCard>
+          <p className="text-xs text-warm-400 uppercase tracking-wider">Last Sync</p>
+          <p className="mt-2 text-3xl font-bold text-brand-400">{lastSync ? timeAgo(lastSync) : "Never"}</p>
+          <p className="mt-1 text-xs text-warm-400">Auto every 6h</p>
+        </MarketsCard>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -268,22 +297,22 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
         </section>
 
         {/* REPOSITORIES */}
-        <section className="rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 via-brand-500/5 to-transparent shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-500/20">
+        <section className="rounded-xl border border-brand-500/20 bg-gradient-to-br from-brand-500/5 via-amber-500/5 to-transparent shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-brand-500/20">
             <div>
               <h2 className="text-base font-stencil font-semibold text-white flex items-center gap-2">
-                <GitCommit className="h-4 w-4 text-cyan-400" />
+                <GitCommit className="h-4 w-4 text-brand-400" />
                 Your Repositories
               </h2>
               <p className="text-xs text-warm-400">
                 {loading ? "Loading..." : `${totalRepos} total · ${forkedRepos.length} forks`}
               </p>
             </div>
-            <a href="/dashboard/repositories" className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 hover:text-cyan-300">
+            <a href="/dashboard/repositories" className="inline-flex items-center gap-1 text-xs font-medium text-brand-400 hover:text-brand-300">
               All <ChevronRight className="h-3 w-3" />
             </a>
           </div>
-          <div className="divide-y divide-[#1a1f35] max-h-[480px] overflow-y-auto">
+          <div className="divide-y divide-white/[0.06] max-h-[480px] overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-brand-400" />
@@ -299,10 +328,10 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
                 return (
                   <div
                     key={repo.id}
-                    className="px-6 py-3 hover:bg-[#1a1f35]/50 transition-colors"
+                    className="px-6 py-3 hover:bg-white/[0.04] transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1a1f35]">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06]">
                         {repo.fork ? (
                           <GitFork className="h-4 w-4 text-amber-400" />
                         ) : (
@@ -326,7 +355,7 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
                           <span>{timeAgo(repo.updated_at)}</span>
                         </div>
                         {syncResult && (
-                          <p className={`mt-1 text-[10px] ${syncResult.success ? "text-green-400" : "text-warm-500"}`}>
+                          <p className={`mt-1 text-[10px] ${syncResult.success ? "text-brand-400" : "text-warm-500"}`}>
                             {syncResult.message}
                           </p>
                         )}
@@ -362,57 +391,44 @@ async function syncRepo(token: string, fullName: string): Promise<{ success: boo
 
       {/* SECONDARY */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <MiniCard icon={CheckCircle2} title="Forks Tracked" value={loading ? "..." : `${totalForks}`} hint="Active monitoring" tone="primary" />
-        <MiniCard icon={Clock} title="Last Sync" value={lastSync ? timeAgo(lastSync) : "Never"} hint="Click Sync All to update" tone="amber" />
-        <MiniCard icon={Bell} title="Notifications" value={`${notifications.length}`} hint="Active alerts" tone="cyan" />
+        <MarketsCard>
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500/10 text-brand-400">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-xs text-warm-400">Forks Tracked</p>
+              <p className="text-xl font-bold text-white">{loading ? "..." : `${totalForks}`}</p>
+              <p className="text-xs text-warm-400">Active monitoring</p>
+            </div>
+          </div>
+        </MarketsCard>
+        <MarketsCard>
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <Clock className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-xs text-warm-400">Last Sync</p>
+              <p className="text-xl font-bold text-white">{lastSync ? timeAgo(lastSync) : "Never"}</p>
+              <p className="text-xs text-warm-400">Click Sync All to update</p>
+            </div>
+          </div>
+        </MarketsCard>
+        <MarketsCard>
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400">
+              <Bell className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-xs text-warm-400">Notifications</p>
+              <p className="text-xl font-bold text-white">{notifications.length}</p>
+              <p className="text-xs text-warm-400">Active alerts</p>
+            </div>
+          </div>
+        </MarketsCard>
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value, icon: Icon, color, trend }: {
-  title: string; value: string | number; icon: any; color: "primary" | "amber" | "rose" | "warm"; trend: string;
-}) {
-  const colors = {
-    primary: "from-brand-500 to-brand-600",
-    amber: "from-amber-500 to-amber-600",
-    rose: "from-rose-500 to-rose-600",
-    warm: "from-warm-500 to-warm-600",
-  };
-  return (
-    <div className="rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5 shadow-sm">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium text-warm-400 uppercase tracking-wide">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-white">{value}</p>
-          <p className="mt-1 text-xs text-warm-400">{trend}</p>
-        </div>
-        <div className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${colors[color]} text-white shadow-sm`}>
-          <Icon className="h-5 w-5" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniCard({ icon: Icon, title, value, hint, tone }: {
-  icon: any; title: string; value: string; hint: string; tone: "primary" | "amber" | "cyan";
-}) {
-  const tones = {
-    primary: "bg-brand-500/10 text-brand-400",
-    amber: "bg-amber-500/10 text-amber-400",
-    cyan: "bg-cyan-500/10 text-cyan-400",
-  };
-  return (
-    <div className="flex items-center gap-4 rounded-xl border border-[#1a1f35] bg-[#0f1530] p-5 shadow-sm">
-      <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tones[tone]}`}>
-        <Icon className="h-6 w-6" />
-      </div>
-      <div>
-        <p className="text-xs font-medium text-warm-400">{title}</p>
-        <p className="text-xl font-bold text-white">{value}</p>
-        <p className="text-xs text-warm-400">{hint}</p>
-      </div>
-    </div>
-  );
-}

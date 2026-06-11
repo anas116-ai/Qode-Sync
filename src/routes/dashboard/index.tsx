@@ -190,7 +190,7 @@ function DashboardPage() {
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-display font-bold text-white">
+          <h1 className="text-2xl font-stencil font-bold text-white">
             Welcome back, {profile?.username || "Developer"} 👋
           </h1>
           <p className="mt-1 text-sm text-warm-400">
@@ -240,14 +240,14 @@ function DashboardPage() {
         <section className="lg:col-span-2 rounded-xl border border-[#1a1f35] bg-[#0f1530] shadow-sm">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a1f35]">
             <div>
-              <h2 className="text-base font-display font-semibold text-white">Fork Activity</h2>
+              <h2 className="text-base font-stencil font-semibold text-white">Fork Activity</h2>
               <p className="text-xs text-warm-400">
-                {loading ? "Loading..." : `${notifications.length} recent fork updates`}
+                {loading ? "Loading..." : `${forkedRepos.length} forked repositories`}
               </p>
             </div>
             <a
-              href="/dashboard/notifications"
-              className="inline-flex items-center gap-1 text-xs font-medium text-brand-400 hover:text-brand-300"
+              href="/dashboard/repositories"
+              className="inline-flex items-center gap-1 text-xs font-medium text-amber-400 hover:text-amber-300"
             >
               View all <ChevronRight className="h-3 w-3" />
             </a>

@@ -253,7 +253,12 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-space">
-      {/* Galaxy Solar System Animation */}
+      {/* Animated nebula clouds */}
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000" />
+      </div>
       <GalaxyBackground />
       
       {/* Aurora glow orbs — lemon yellow */}
@@ -270,7 +275,7 @@ function Hero() {
 
         <motion.h1
           initial="hidden" animate="visible" variants={fadeUp} transition={{ delay: 0.2, duration: 0.6 }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
+          className="font-stencil text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
         >
           Stop checking forks
           <br />

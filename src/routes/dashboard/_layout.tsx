@@ -1,5 +1,5 @@
 import { Outlet, Navigate, createFileRoute, useRouterState, useRouter } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAuth } from "@/lib/providers/auth-provider";
 import {
   Home,
@@ -88,11 +88,22 @@ function DashboardLayout() {
             <ArrowLeft className="h-5 w-5" />
           </button>
 
-          {/* Logo + Brand */}
-          <Logo size="sm" variant="lettermark" showText={false} />
-          <a href="/" className="hidden sm:inline font-display text-lg font-bold" style={{ background: "linear-gradient(135deg, #e8f553, #c8d930, #a8b820)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Qode Sync
-          </a>
+          {/* Logo + Brand - Larger typography */}
+          <Logo size="lg" variant="combination" showText={true} />
+          
+          {/* Sync All Button in Header */}
+          <button
+            onClick={() => {
+              // Trigger sync - navigate to repositories and sync all
+              window.location.href = "/dashboard/repositories";
+            }}
+            className="hidden sm:inline-flex items-center gap-2 rounded-lg border bg-white/5 px-3 py-1.5 text-xs font-medium text-warm-200 hover:bg-white/10 transition-all"
+            style={{ borderColor: "rgba(200, 217, 48, 0.1)" }}
+            title="Sync all forks"
+          >
+            <GitMerge className="h-3.5 w-3.5" />
+            Sync All
+          </button>
 
           {/* Search */}
           <div className="relative ml-2 hidden md:block">
@@ -109,16 +120,6 @@ function DashboardLayout() {
           </div>
 
           <div className="flex-1" />
-
-          {/* Sync */}
-          <button
-            className="hidden sm:inline-flex items-center gap-2 rounded-lg border bg-white/5 px-3 py-1.5 text-xs font-medium text-warm-200 hover:bg-white/10 transition-all"
-            style={{ borderColor: "rgba(200, 217, 48, 0.1)" }}
-            title="Sync all forks now"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Sync
-          </button>
 
           {/* Theme toggle */}
           <button

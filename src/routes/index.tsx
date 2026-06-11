@@ -25,6 +25,8 @@ import {
   Code2,
   Workflow,
   RefreshCw,
+  LogOut,
+  ArrowLeft,
 } from "lucide-react";
 import { Logo } from "../components/ui/logo";
 
@@ -93,10 +95,14 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showLoggedIn, setShowLoggedIn] = useState(false);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", fn, { passive: true });
+    // Check if user is logged in (has profile in localStorage)
+    const profile = localStorage.getItem("qodesync_profile");
+    setShowLoggedIn(!!profile);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
@@ -119,7 +125,7 @@ function Navbar() {
         scrolled ? "glass border-b border-brand-500/20" : "bg-transparent"
       }`} />
       <div className="relative max-w-6xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-        <Logo size="sm" />
+        <Logo size="md" />
         <nav className="hidden md:flex items-center gap-1">
           {links.map((l) => (
             <a key={l.href} href={l.href} className="px-3 py-2 text-sm text-white/50 hover:text-brand-300 transition-colors rounded-lg hover:bg-brand-500/10">
@@ -127,10 +133,34 @@ function Navbar() {
             </a>
           ))}
         </nav>
-        <div className="hidden md:flex items-center gap-3">
-          <Btn href="/login" variant="ghost">Sign in</Btn>
-          <Btn href="/login" variant="primary" className="text-[#0a0d18]" icon={<ArrowRight className="w-3.5 h-3.5" />}>Get started</Btn>
-        </div>
+        {showLoggedIn && (
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              onClick={() => window.location.href = "/dashboard"}
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-brand-400 hover:text-white hover:bg-white/5 transition-all"
+            >
+              <ArrowLeft className="h-3 w-3" />
+              Back
+            </button>
+            <button
+              onClick={async () => {
+                localStorage.removeItem("qodesync_profile");
+                localStorage.removeItem("qodesync_github_token");
+                window.location.href = "/login";
+              }}
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium text-rose-400 hover:text-white hover:bg-rose-500/10 transition-all"
+            >
+              <LogOut className="h-3 w-3" />
+              Logout
+            </button>
+          </div>
+        )}
+        {!showLoggedIn && (
+          <div className="hidden md:flex items-center gap-3">
+            <Btn href="/login" variant="ghost">Sign in</Btn>
+            <Btn href="/login" variant="primary" className="text-[#0a0d18]" icon={<ArrowRight className="w-3.5 h-3.5" />}>Get started</Btn>
+          </div>
+        )}
         <button onClick={() => setOpen(!open)} className="md:hidden p-2 text-white/60 hover:text-white">
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -161,6 +191,59 @@ function Navbar() {
   );
 }
 
+/* ═══ GALAXY BACKGROUND ═══ */
+function GalaxyBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const starsRef = useRef<Array<{x: number, y: number, r: number, speed: number}>>([]);
+  const frameRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      starsRef.current = Array.from({ length: 80 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.3,
+        speed: Math.random() * 0.05 + 0.02,
+      }));
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    function animate() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      starsRef.current.forEach((star) => {
+        star.y += star.speed;
+        if (star.y > canvas.height) star.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232, 245, 83, ${0.3 + Math.sin(Date.now() * 0.001) * 0.1})`;
+        ctx.fill();
+      });
+
+      frameRef.current = requestAnimationFrame(animate);
+    }
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ opacity: 0.3 }} />;
+}
+
 /* ═══ HERO ═══ */
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -170,6 +253,9 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-space">
+      {/* Galaxy Solar System Animation */}
+      <GalaxyBackground />
+      
       {/* Aurora glow orbs — lemon yellow */}
       <div className="absolute top-20 left-[15%] w-[500px] h-[500px] rounded-full bg-brand-500/15 blur-[150px] animate-aurora" />
       <div className="absolute bottom-20 right-[15%] w-[400px] h-[400px] rounded-full bg-brand-400/10 blur-[120px] animate-aurora-slow" />

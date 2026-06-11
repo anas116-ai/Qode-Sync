@@ -190,6 +190,8 @@ useEffect(() => {
   async function detectAllUpdates() {
     if (!githubToken || forkedRepos.length === 0 || detectingUpdates) return;
     setDetectingUpdates(true);
+    const toastId = toast.loading("Checking for upstream updates...");
+    
     const results: Record<string, UpstreamUpdate> = {};
     
     // Process a few at a time to avoid rate limits
@@ -203,6 +205,9 @@ useEffect(() => {
     
     setUpstreamUpdates((prev) => ({ ...prev, ...results }));
     setDetectingUpdates(false);
+    
+    const updateCount = Object.keys(results).length;
+    toast.success(`Found ${updateCount} updates`, { id: toastId });
     
     return results;
   }

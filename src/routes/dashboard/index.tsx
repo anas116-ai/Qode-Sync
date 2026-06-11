@@ -83,44 +83,26 @@ async function fetchGitHubRepos(token: string): Promise<GitHubRepo[]> {
 }
 
 async function syncRepo(token: string, fullName: string): Promise<{ success: boolean; message: string }> {
-  try {
-    // Fetch latest commit from default branch
-    const res = await fetch(`https://api.github.com/repos/${fullName}/commits?per_page=1`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-      },
-    });
-    if (!res.ok) return { success: false, message: `GitHub API error (${res.status})` };
-    const commits = await res.json();
-    if (commits.length > 0) {
-      return { success: true, message: `Latest: ${commits[0].commit.message.slice(0, 60)}` };
-    }
-    return { success: true, message: "Synced" };
-  } catch {
-    return { success: false, message: "Network error" };
-  }
-}
+   try {
+     const res = await fetch(`https://api.github.com/repos/${fullName}/commits?per_page=1`, {
+       headers: {
+         Authorization: `Bearer ${token}`,
+         Accept: "application/vnd.github+json",
+         "X-GitHub-Api-Version": "2022-11-28",
+       },
+     });
+     if (!res.ok) return { success: false, message: `GitHub API error (${res.status})` };
+     const commits = await res.json();
+     if (commits.length > 0) {
+       return { success: true, message: `Latest: ${commits[0].commit.message.slice(0, 60)}` };
+     }
+     return { success: true, message: "Synced" };
+   } catch {
+     return { success: false, message: "Network error" };
+   }
+ }
 
-function severityStyles(sev: string) {
-  switch (sev) {
-    case "critical": return { bg: "bg-rose-500/15", text: "text-rose-400", ring: "ring-rose-500/20" };
-    case "high": return { bg: "bg-amber-500/15", text: "text-amber-400", ring: "ring-amber-500/20" };
-    case "medium": return { bg: "bg-brand-500/15", text: "text-brand-400", ring: "ring-brand-500/20" };
-    default: return { bg: "bg-warm-700/20", text: "text-warm-300", ring: "ring-warm-600/20" };
-  }
-}
-
-function typeIcon(t: string) {
-  if (t === "security_advisory") return Shield;
-  if (t === "release") return Tag;
-  if (t === "tag") return Tag;
-  if (t === "pull_request_merged") return GitPullRequest;
-  return GitCommit;
-}
-
-function DashboardPage() {
+ function DashboardPage() {
   const { profile, githubToken } = useAuth();
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);

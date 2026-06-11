@@ -113,3 +113,4 @@ temp/
 .terraform/
 crash.log
 crash.*.log
+.opencode

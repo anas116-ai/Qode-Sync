@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Bell, User, Shield } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/providers/auth-provider";
+import type { UserProfile } from "@/lib/providers/auth-provider";
 
 export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
@@ -38,17 +39,18 @@ function SettingsPage() {
   );
 }
 
-function ProfileSettings({ profile }: { profile: { username?: string; email?: string | null } }) {
+function ProfileSettings({ profile }: { profile: UserProfile | null }) {
+  if (!profile) return null;
   return (
     <div className="rounded-lg border bg-card p-6 space-y-4">
       <h2 className="text-lg font-semibold">Profile Settings</h2>
       <div>
         <label className="text-sm font-medium">Username</label>
-        <p className="text-sm text-muted-foreground">{profile?.username}</p>
+        <p className="text-sm text-muted-foreground">{profile.username}</p>
       </div>
       <div>
         <label className="text-sm font-medium">Email</label>
-        <p className="text-sm text-muted-foreground">{profile?.email || "Not provided"}</p>
+        <p className="text-sm text-muted-foreground">{profile.email || "Not provided"}</p>
       </div>
     </div>
   );

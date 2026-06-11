@@ -14,13 +14,6 @@ export const Route = createFileRoute("/dashboard/analytics")({
   component: AnalyticsPage,
 });
 
-interface RepoStats {
-  total_forks: number;
-  updated_forks: number;
-  critical_updates: number;
-  last_sync: string | null;
-}
-
 interface RepoAnalytic {
   id: string;
   name: string;
@@ -204,7 +197,7 @@ function AnalyticsPage() {
             </p>
           </div>
           <div className="p-6">
-            <SimpleBarChart data={starsData} maxValue={maxStars} labelKey="name" />
+            <SimpleBarChart data={starsData} maxValue={maxStars} />
           </div>
         </div>
       </div>

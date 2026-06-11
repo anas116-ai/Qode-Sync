@@ -211,7 +211,7 @@ function Wordmark({ textSize, showTagline }: { textSize: string; showTagline: bo
   return (
     <div className="flex flex-col">
       <span
-        className={`font-display font-bold ${textSize} tracking-tight leading-none`}
+        className={`font-stencil font-bold ${textSize} tracking-tight leading-none`}
         style={{
           background: `linear-gradient(135deg, ${ORANGE_TEXT} 0%, ${ORANGE_DARK} 100%)`,
           WebkitBackgroundClip: "text",

@@ -18,7 +18,10 @@ import {
   Clock,
   GitCommit,
   GitPullRequest,
+  Bell,
+  GitMerge,
 } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export const Route = createFileRoute("/dashboard/repositories")({
   component: RepositoriesPage,
@@ -163,9 +166,9 @@ function RepositoriesPage() {
   const [upstreamUpdates, setUpstreamUpdates] = useState<Record<string, UpstreamUpdate>>({});
   const [detectingUpdates, setDetectingUpdates] = useState(false);
 
-  useEffect(() => {
-    loadRepos();
-  }, []);
+useEffect(() => {
+     loadRepos();
+   }, [githubToken]);
 
   async function loadRepos() {
     if (!githubToken || githubToken === "demo-token") {
@@ -311,6 +314,20 @@ function RepositoriesPage() {
   const hasNewUpdates = Object.keys(upstreamUpdates).length > 0;
   const newUpdatesCount = Object.values(upstreamUpdates).filter((u) => u.hasUpdate).length;
 
+  // Sync all forks at once
+  async function handleSyncAll() {
+    if (!githubToken || forkedRepos.length === 0) return;
+    setSyncing(true);
+    const syncToast = toast.loading(`Syncing ${forkedRepos.length} forks...`);
+    
+    for (const repo of forkedRepos.slice(0, 10)) {
+      await handleSyncRepo(repo.full_name);
+    }
+    
+    toast.success(`Sync complete! Updated ${Object.keys(syncStatuses).length} forks`, { id: syncToast });
+    setSyncing(false);
+  }
+
   const filteredRepos = repos.filter((repo) => {
     if (search) {
       const q = search.toLowerCase();
@@ -328,13 +345,23 @@ function RepositoriesPage() {
 
   return (
     <div className="px-6 py-6 lg:px-8 space-y-6 max-w-7xl mx-auto">
-      {/* Header */}
+      {/* Header with Back Button */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Repositories</h1>
-          <p className="text-sm text-warm-400 mt-1">
-            {repos.length} total · {forkedRepos.length} forks · {newUpdatesCount} with updates
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.history.back()}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-warm-400 hover:bg-white/5 transition-colors"
+            title="Go back"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Repositories</h1>
+            <p className="text-sm text-warm-400 mt-1">
+              {repos.length} total · {forkedRepos.length} forks · {newUpdatesCount} with updates
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -344,6 +371,15 @@ function RepositoriesPage() {
           >
             <RefreshCw className={`h-4 w-4 ${detectingUpdates ? "animate-spin" : ""}`} />
             {detectingUpdates ? "Checking..." : newUpdatesCount > 0 ? `${newUpdatesCount} Updates Found` : "Check Updates"}
+          </button>
+          <button
+            onClick={handleSyncAll}
+            disabled={syncing || forkedRepos.length === 0}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-[#0a0d18] transition-colors shadow-sm disabled:opacity-50"
+            style={{ background: "linear-gradient(135deg, #e8f553, #c8d930)" }}
+          >
+            <GitMerge className="h-4 w-4" />
+            {syncing ? "Syncing..." : "Sync All Forks"}
           </button>
           <button
             onClick={loadRepos}

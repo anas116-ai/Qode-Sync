@@ -595,7 +595,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-14">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <Logo size="md" />
+            <Logo size="lg" />
             <p className="mt-3 text-xs text-white/30 leading-relaxed">AI-powered fork monitoring for developers.</p>
             <div className="mt-4 flex gap-2">
               {[Github, Twitter, Linkedin, Globe].map((I, i) => (

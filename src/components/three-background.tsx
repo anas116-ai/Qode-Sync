@@ -1,4 +1,6 @@
 import { useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useId } from "react";
 
 interface Particle {
   x: number;
@@ -14,6 +16,7 @@ export function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
   const frameRef = useRef<number>(0);
+  const starsRef = useRef<Array<{x: number, y: number, r: number, alpha: number}>>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,11 +28,18 @@ export function ParticleBackground() {
       if (!canvas) return;
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      // Create stars for background
+      starsRef.current = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5,
+        alpha: Math.random() * 0.3 + 0.1,
+      }));
     }
     resize();
     window.addEventListener("resize", resize);
 
-    // Create particles
+    // Create particles for foreground
     const count = Math.min(60, Math.floor(window.innerWidth * window.innerHeight / 20000));
     particles.current = Array.from({ length: count }, () => ({
       x: Math.random() * (canvas?.width || window.innerWidth),
@@ -38,37 +48,32 @@ export function ParticleBackground() {
       speedX: (Math.random() - 0.5) * 0.3,
       speedY: (Math.random() - 0.5) * 0.3,
       opacity: Math.random() * 0.4 + 0.1,
-      hue: Math.random() < 0.5 ? 70 : 40, // Yellow or gold hue
+      hue: Math.random() < 0.5 ? 70 : 40,
     }));
 
     function animate() {
       if (!canvas || !ctx) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles.current.forEach((p) => {
+      // Draw stars (twinkling background)
+      starsRef.current.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * (0.5 + Math.sin(Date.now() * 0.001) * 0.3)})`;
+        ctx.fill();
+      });
+
+      // Draw connecting lines between particles
+      particles.current.forEach((p, i) => {
         p.x += p.speedX;
         p.y += p.speedY;
 
-        // Wrap around
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Draw particle
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.opacity})`;
-        ctx.fill();
-
-        // Glow
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.opacity * 0.2})`;
-        ctx.fill();
-
-        // Connect nearby particles
-        particles.current.forEach((p2) => {
+        particles.current.slice(i + 1).forEach((p2) => {
           const dx = p.x - p2.x;
           const dy = p.y - p2.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -76,11 +81,24 @@ export function ParticleBackground() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `hsla(${p.hue}, 80%, 60%, ${(1 - dist / 120) * 0.15})`;
+            ctx.strokeStyle = `hsla(${p.hue}, 80%, 60%, ${(1 - dist / 120) * 0.12})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         });
+      });
+
+      // Draw particles
+      particles.current.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.opacity})`;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 60%, ${p.opacity * 0.2})`;
+        ctx.fill();
       });
 
       frameRef.current = requestAnimationFrame(animate);
@@ -97,7 +115,7 @@ export function ParticleBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.5 }}
     />
   );
 }

@@ -65,6 +65,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.font-stencil {
+  font-family: 'Bespoke Stencil', 'Cabinet Grotesk', sans-serif;
+}
+
 ::selection {
   background-color: rgba(200, 217, 48, 0.35);
   color: #f0f5b8;

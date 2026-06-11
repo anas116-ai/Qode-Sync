@@ -236,13 +236,16 @@ function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* UPDATES / NOTIFICATIONS */}
-        <section className="lg:col-span-2 rounded-xl border border-[#1a1f35] bg-[#0f1530] shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a1f35]">
+        {/* FORKED REPOSITORIES */}
+        <section className="lg:col-span-2 rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 via-brand-500/5 to-transparent shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-amber-500/20">
             <div>
-              <h2 className="text-base font-stencil font-semibold text-white">Fork Activity</h2>
+              <h2 className="text-base font-stencil font-semibold text-white flex items-center gap-2">
+                <GitFork className="h-4 w-4 text-amber-400" />
+                Forked Repositories
+              </h2>
               <p className="text-xs text-warm-400">
-                {loading ? "Loading..." : `${forkedRepos.length} forked repositories`}
+                {loading ? "Loading..." : `${forkedRepos.length} forks tracked`}
               </p>
             </div>
             <a
@@ -252,58 +255,53 @@ function DashboardPage() {
               View all <ChevronRight className="h-3 w-3" />
             </a>
           </div>
-          <div className="divide-y divide-[#1a1f35]">
+          <div className="divide-y divide-amber-500/10">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-brand-400" />
+                <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
                 <span className="ml-2 text-sm text-warm-400">Fetching repositories...</span>
               </div>
-            ) : notifications.length === 0 ? (
+            ) : forkedRepos.length === 0 ? (
               <div className="text-center py-12">
-                <GitFork className="h-8 w-8 mx-auto text-warm-500 mb-2" />
-                <p className="text-sm text-warm-400">No repositories found</p>
-                <p className="text-xs text-warm-500">Connect your GitHub account to see forks</p>
+                <GitFork className="h-8 w-8 mx-auto text-amber-500 mb-2" />
+                <p className="text-sm text-warm-400">No forks found</p>
+                <p className="text-xs text-warm-500">Your forked repositories will appear here</p>
               </div>
             ) : (
-              notifications.map((n) => {
-                const Icon = typeIcon(n.type);
-                const ss = severityStyles(n.severity);
-                return (
-                  <a
-                    key={n.id}
-                    href={`/dashboard/repositories/${encodeURIComponent(n.repo)}`}
-                    className="block px-6 py-4 hover:bg-[#1a1f35]/50 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`rounded-lg p-2 ${ss.bg} ${ss.text} ring-1 ${ss.ring}`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">{n.title}</p>
-                        <p className="mt-0.5 text-xs text-warm-400 line-clamp-1">{n.description}</p>
-                        <p className="mt-1 text-[11px] text-warm-500">{n.repo} · {timeAgo(n.created_at)}</p>
-                      </div>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${ss.bg} ${ss.text}`}>
-                        {n.severity}
-                      </span>
+              forkedRepos.slice(0, 5).map((repo) => (
+                <div
+                  key={repo.id}
+                  className="px-6 py-3 hover:bg-amber-500/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/20">
+                      <GitFork className="h-4 w-4 text-amber-400" />
                     </div>
-                  </a>
-                );
-              })
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{repo.full_name}</p>
+                      <p className="mt-0.5 text-xs text-warm-400 line-clamp-1">{repo.description}</p>
+                      <p className="mt-1 text-[11px] text-amber-400">{timeAgo(repo.updated_at)} • {repo.stargazers_count} stars</p>
+                    </div>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </section>
 
         {/* REPOSITORIES */}
-        <section className="rounded-xl border border-[#1a1f35] bg-[#0f1530] shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a1f35]">
+        <section className="rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 via-brand-500/5 to-transparent shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-500/20">
             <div>
-              <h2 className="text-base font-display font-semibold text-white">Your Repositories</h2>
+              <h2 className="text-base font-stencil font-semibold text-white flex items-center gap-2">
+                <GitCommit className="h-4 w-4 text-cyan-400" />
+                Your Repositories
+              </h2>
               <p className="text-xs text-warm-400">
-                {loading ? "Loading..." : `${totalRepos} total · ${totalForks} forks`}
+                {loading ? "Loading..." : `${totalRepos} total · ${forkedRepos.length} forks`}
               </p>
             </div>
-            <a href="/dashboard/repositories" className="inline-flex items-center gap-1 text-xs font-medium text-brand-400">
+            <a href="/dashboard/repositories" className="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 hover:text-cyan-300">
               All <ChevronRight className="h-3 w-3" />
             </a>
           </div>
